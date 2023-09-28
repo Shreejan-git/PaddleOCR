@@ -29,16 +29,25 @@ def init_args():
     parser.add_argument("--table_model_dir", type=str)
     parser.add_argument(
         "--merge_no_span_structure", type=str2bool, default=True)
+
+    ##################################################################
     parser.add_argument(
         "--table_char_dict_path",
         type=str,
         default="../ppocr/utils/dict/table_structure_dict_ch.txt")
+
+    ##################################################################
     # params for layout
-    parser.add_argument("--layout_model_dir", type=str)
+    # parser.add_argument("--layout_model_dir", type=str, default='/home/vertexml/Downloads/paddle_all_downloads'
+    #                                                             '/layout_model/ppyolov2_r50vd_dcn_365e_tableBank_word')
+
+    parser.add_argument("--layout_model_dir", type=str, default='/home/vertexml/Downloads/paddle_all_downloads'
+                                                                '/layout_model/picodet_lcnet_x1_0_fgd_layout_infer')
     parser.add_argument(
         "--layout_dict_path",
         type=str,
-        default="../ppocr/utils/dict/layout_dict/layout_publaynet_dict.txt")
+        # default="../ppocr/utils/dict/layout_dict/layout_publaynet_dict.txt")
+        default="/home/vertexml/Documents/PaddleOCR/ppocr/utils/dict/layout_dict/layout_publaynet_dict.txt")
     parser.add_argument(
         "--layout_score_threshold",
         type=float,
@@ -49,6 +58,8 @@ def init_args():
         type=float,
         default=0.5,
         help="Threshold of nms.")
+
+    ##################################################################
     # params for kie
     parser.add_argument("--kie_algorithm", type=str, default='LayoutXLM')
     parser.add_argument("--ser_model_dir", type=str)
@@ -67,6 +78,8 @@ def init_args():
         choices=['structure', 'kie'],
         default='structure',
         help='structure and kie is supported')
+
+    #################################################
     parser.add_argument(
         "--image_orientation",
         type=bool,
@@ -77,6 +90,8 @@ def init_args():
         type=str2bool,
         default=True,
         help='Whether to enable layout analysis')
+
+    #####################################################
     parser.add_argument(
         "--table",
         type=str2bool,
@@ -87,6 +102,8 @@ def init_args():
         type=str2bool,
         default=True,
         help='In the forward, whether the non-table area is recognition by ocr')
+
+    #######################################################
     # param for recovery
     parser.add_argument(
         "--recovery",
