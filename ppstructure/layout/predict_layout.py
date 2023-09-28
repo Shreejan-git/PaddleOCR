@@ -15,6 +15,9 @@ import os
 import sys
 
 __dir__ = os.path.dirname(os.path.abspath(__file__))
+
+from experiment.draw_bboxes import draw_bbox
+
 sys.path.append(__dir__)
 sys.path.insert(0, os.path.abspath(os.path.join(__dir__, '../..')))
 
@@ -103,7 +106,11 @@ class LayoutPredictor(object):
 
 
 def main(args):
-    image_file_list = get_image_file_list(args.image_dir)
+    # image_file_list = get_image_file_list(args.image_dir)
+    file_dir = "/home/vertexml/Documents/PaddleOCR/resources/imgs_en/254.jpg"
+    file_dir = "/home/vertexml/Downloads/ppocr_img/ppocr_img/table/1.png"
+    # file_dir = "/home/vertexml/Downloads/ppocr_img/ppocr_img/table/table.jpg"
+    image_file_list = get_image_file_list(file_dir)
     layout_predictor = LayoutPredictor(args)
     count = 0
     total_time = 0
@@ -118,6 +125,7 @@ def main(args):
             continue
 
         layout_res, elapse = layout_predictor(img)
+        draw_bbox(img, layout_res)
 
         logger.info("result: {}".format(layout_res))
 
