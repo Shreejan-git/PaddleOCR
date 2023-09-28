@@ -711,7 +711,8 @@ class PPStructure(StructureSystem):
         assert params.structure_version in SUPPORT_STRUCTURE_MODEL_VERSION, "structure_version must in {}, but get {}".format(
             SUPPORT_STRUCTURE_MODEL_VERSION, params.structure_version)
         params.use_gpu = check_gpu(params.use_gpu)
-        params.mode = 'structure'
+        # params.mode = 'structure'  # YEHA MAILE KIE VANERA
+        params.mode = 'kie'  # YEHA MAILE KIE VANERA
 
         if not params.show_log:
             logger.setLevel(logging.INFO)
@@ -772,7 +773,7 @@ def main():
         download_with_progressbar(image_dir, 'tmp.jpg')
         image_file_list = ['tmp.jpg']
     else:
-        image_dir = "resources/imgs_en"
+        image_dir = "resources/imgs_en/254.jpg"
         # image_file_list = get_image_file_list(args.image_dir)
         image_file_list = get_image_file_list(image_dir)
     if len(image_file_list) == 0:
@@ -838,6 +839,7 @@ def main():
                                                             len(img_paths)))
                 new_img_name = os.path.basename(new_img_path).split('.')[0]
                 result = engine(img, img_idx=index)
+                print('The value of result', result)
                 save_structure_res(result, args.output, img_name, index)
 
                 if args.recovery and result != []:
