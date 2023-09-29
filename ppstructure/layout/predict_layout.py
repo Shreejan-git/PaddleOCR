@@ -107,7 +107,7 @@ class LayoutPredictor(object):
 
 def main(args):
     # image_file_list = get_image_file_list(args.image_dir)
-    file_dir = "/home/vertexml/Documents/PaddleOCR/resources/imgs_en/254.jpg"
+    # file_dir = "/home/vertexml/Documents/PaddleOCR/resources/imgs_en/MicrosoftTeams-image.png"
     file_dir = "/home/vertexml/Downloads/ppocr_img/ppocr_img/table/1.png"
     # file_dir = "/home/vertexml/Downloads/ppocr_img/ppocr_img/table/table.jpg"
     image_file_list = get_image_file_list(file_dir)

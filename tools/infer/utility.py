@@ -30,15 +30,17 @@ from ppocr.utils.logging import get_logger
 def str2bool(v):
     return v.lower() in ("true", "yes", "t", "y", "1")
 
+
 def str2int_tuple(v):
     return tuple([int(i.strip()) for i in v.split(",")])
+
 
 def init_args():
     parser = argparse.ArgumentParser()
     # params for prediction engine
     parser.add_argument("--use_gpu", type=str2bool, default=True)
     parser.add_argument("--use_xpu", type=str2bool, default=False)
-    parser.add_argument("--use_npu", type=str2bool, default=False)
+    parser.add_argument("--use_npu", type=str2bool, default=True)
     parser.add_argument("--ir_optim", type=str2bool, default=True)
     parser.add_argument("--use_tensorrt", type=str2bool, default=False)
     parser.add_argument("--min_subgraph_size", type=int, default=15)
@@ -49,8 +51,16 @@ def init_args():
     # params for text detector
     parser.add_argument("--image_dir", type=str)
     parser.add_argument("--page_num", type=int, default=0)
-    parser.add_argument("--det_algorithm", type=str, default='DB++')  # changed to DB++
-    parser.add_argument("--det_model_dir", type=str)
+    parser.add_argument("--det_algorithm", type=str, default='DB')  # This is the original default
+    # parser.add_argument("--det_algorithm", type=str, default='DB++')  # changed to DB++
+
+    ############################################################
+    # parser.add_argument("--det_model_dir", type=str, default="/home/vertexml/Downloads/paddle_all_downloads"
+    #                                                          "/table_data_specific/en_ppocr_mobile_v2.0_table_det_infer")
+    parser.add_argument("--det_model_dir", type=str, default="/home/vertexml/Downloads/paddle_all_downloads"
+                                                             "/general_det_and_rec/en_PP-OCRv3_det_infer")
+
+    ###############################################################
     parser.add_argument("--det_limit_side_len", type=float, default=960)
     parser.add_argument("--det_limit_type", type=str, default='max')
     parser.add_argument("--det_box_type", type=str, default='quad')
@@ -85,16 +95,25 @@ def init_args():
     parser.add_argument("--fourier_degree", type=int, default=5)
 
     # params for text recognizer
+
     parser.add_argument("--rec_algorithm", type=str, default='SVTR_LCNet')
-    parser.add_argument("--rec_model_dir", type=str)
-    parser.add_argument("--rec_image_inverse", type=str2bool, default=True)
+    parser.add_argument("--rec_model_dir", type=str, default="/home/vertexml/Downloads/paddle_all_downloads"
+                                                             "/general_det_and_rec/en_PP-OCRv3_rec_infer")
+    # parser.add_argument("--rec_image_inverse", type=str2bool, default=True)
+    parser.add_argument("--rec_image_inverse", type=str2bool, default=False)
     parser.add_argument("--rec_image_shape", type=str, default="3, 48, 320")
     parser.add_argument("--rec_batch_num", type=int, default=6)
     parser.add_argument("--max_text_length", type=int, default=25)
+
+    ####################################################################################
     parser.add_argument(
         "--rec_char_dict_path",
         type=str,
-        default="./ppocr/utils/ppocr_keys_v1.txt")
+        # default="./ppocr/utils/ppocr_keys_v1.txt")
+        # default="/home/vertexml/Documents/PaddleOCR/ppocr/utils/ppocr_keys_v1.txt")  # yo chai chinese ko xa
+        default="/home/vertexml/Documents/PaddleOCR/ppocr/utils/dict/table_dict.txt")  # searching for the perfect match
+    #################################################################################
+
     parser.add_argument("--use_space_char", type=str2bool, default=True)
     parser.add_argument(
         "--vis_font_path", type=str, default="./doc/fonts/simfang.ttf")
@@ -294,7 +313,7 @@ def get_output_tensors(args, mode, predictor):
     output_names = predictor.get_output_names()
     output_tensors = []
     if mode == "rec" and args.rec_algorithm in [
-            "CRNN", "SVTR_LCNet", "SVTR_HGNet"
+        "CRNN", "SVTR_LCNet", "SVTR_HGNet"
     ]:
         output_name = 'softmax_0.tmp_0'
         if output_name in output_names:
@@ -436,9 +455,9 @@ def draw_ocr_box_txt(image,
 
 def draw_box_txt_fine(img_size, box, txt, font_path="./doc/fonts/simfang.ttf"):
     box_height = int(
-        math.sqrt((box[0][0] - box[3][0])**2 + (box[0][1] - box[3][1])**2))
+        math.sqrt((box[0][0] - box[3][0]) ** 2 + (box[0][1] - box[3][1]) ** 2))
     box_width = int(
-        math.sqrt((box[0][0] - box[1][0])**2 + (box[0][1] - box[1][1])**2))
+        math.sqrt((box[0][0] - box[1][0]) ** 2 + (box[0][1] - box[1][1]) ** 2))
 
     if box_height > 2 * box_width and box_height > 30:
         img_text = Image.new('RGB', (box_height, box_width), (255, 255, 255))

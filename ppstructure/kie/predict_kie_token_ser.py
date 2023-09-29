@@ -130,7 +130,9 @@ class SerPredictor(object):
 
 
 def main(args):
-    image_file_list = get_image_file_list(args.image_dir)
+    image_path = "/home/vertexml/Downloads/paddle_all_downloads/general_det_and_rec/testing_table_image.jpg"
+
+    image_file_list = get_image_file_list(image_path)
     ser_predictor = SerPredictor(args)
     count = 0
     total_time = 0

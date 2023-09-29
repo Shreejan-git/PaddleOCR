@@ -64,10 +64,13 @@ class TableSystem(object):
         if args.benchmark:
             benchmark_tmp = args.benchmark
             args.benchmark = False
+
         self.text_detector = predict_det.TextDetector(copy.deepcopy(
             args)) if text_detector is None else text_detector
+
         self.text_recognizer = predict_rec.TextRecognizer(copy.deepcopy(
             args)) if text_recognizer is None else text_recognizer
+
         if benchmark_tmp:
             args.benchmark = True
         self.table_structurer = predict_strture.TableStructurer(args)
@@ -146,11 +149,18 @@ def to_excel(html_table, excel_path):
 
 
 def main(args):
-    image_file_list = get_image_file_list(args.image_dir)
+    # image_path = "/home/vertexml/Downloads/ppocr_img/ppocr_img/table/table.jpg"
+    image_path = "/home/vertexml/Downloads/paddle_all_downloads/general_det_and_rec/tabular_image_data.jpg"
+    image_path = "/home/vertexml/Downloads/paddle_all_downloads/general_det_and_rec/testing_table_image.jpg"
+    # image_path = "/home/vertexml/Downloads/paddle_all_downloads/general_det_and_rec/Tjkjc.jpg"
+    # image_file_list = get_image_file_list(args.image_dir)
+
+    image_file_list = get_image_file_list(image_path)
     image_file_list = image_file_list[args.process_id::args.total_process_num]
     os.makedirs(args.output, exist_ok=True)
 
     table_sys = TableSystem(args)
+
     img_num = len(image_file_list)
 
     f_html = open(
@@ -205,6 +215,7 @@ def main(args):
             f'<td><img src="{os.path.basename(image_file)}" width=640></td>\n')
         f_html.write("</tr>\n")
     f_html.write("</table>\n")
+    f_html.write("</body>\n")
     f_html.close()
 
     if args.benchmark:

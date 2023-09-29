@@ -24,9 +24,12 @@ def init_args():
     # params for output
     parser.add_argument("--output", type=str, default='./output')
     # params for table structure
-    parser.add_argument("--table_max_len", type=int, default=488)
+    # parser.add_argument("--table_max_len", type=int, default=488)
+    parser.add_argument("--table_max_len", type=int, default=488*2)
     parser.add_argument("--table_algorithm", type=str, default='TableAttn')
-    parser.add_argument("--table_model_dir", type=str)
+    # parser.add_argument("--table_model_dir", type=str)
+    parser.add_argument("--table_model_dir", type=str, default='/home/vertexml/Downloads/paddle_all_downloads'
+                                                               '/en_ppstructure_mobile_v2.0_SLANet_infer')
     parser.add_argument(
         "--merge_no_span_structure", type=str2bool, default=True)
 
@@ -34,8 +37,8 @@ def init_args():
     parser.add_argument(
         "--table_char_dict_path",
         type=str,
-        default="../ppocr/utils/dict/table_structure_dict_ch.txt")
-
+        # default="../ppocr/utils/dict/table_structure_dict_ch.txt")
+        default="/home/vertexml/Documents/PaddleOCR/ppocr/utils/dict/table_structure_dict.txt")
     ##################################################################
     # params for layout
     # parser.add_argument("--layout_model_dir", type=str, default='/home/vertexml/Downloads/paddle_all_downloads'
