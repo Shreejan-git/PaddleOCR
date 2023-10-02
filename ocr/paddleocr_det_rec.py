@@ -18,6 +18,8 @@ import importlib
 
 __dir__ = os.path.dirname(__file__)
 
+from typing import List, Any, Union
+
 # import paddle
 from ocr.get_utils import parse_lang, parse_args, get_model_config, check_img
 from ocr.paddle_ocr_settings import SUPPORT_OCR_MODEL_VERSION, SUPPORT_DET_MODEL, SUPPORT_REC_MODEL
@@ -31,6 +33,8 @@ import cv2
 import logging
 import numpy as np
 from pathlib import Path
+
+
 # import base64
 # from io import BytesIO
 # from PIL import Image
@@ -71,10 +75,10 @@ class PaddleOCR(predict_system.TextSystem):
     def __init__(self, lang='en', det='DB', rec='', type_='ocr', use_gpu=False, **kwargs):
         """
         paddleocr package
-        args:
+        args:x
             **kwargs: other params show in paddleocr --help
         """
-        params = parse_args(mMain=False)  # parse_args ko import cross check
+        params = parse_args(mMain=False)  # parse_args ko import crosscheck
         params.__dict__.update(**kwargs)
         assert params.ocr_version in SUPPORT_OCR_MODEL_VERSION, "ocr_version must in {}, but get {}".format(
             SUPPORT_OCR_MODEL_VERSION, params.ocr_version)
@@ -164,7 +168,7 @@ class PaddleOCR(predict_system.TextSystem):
                 'Since the angle classifier is not initialized, it will not be used during the forward process'
             )
 
-        img = check_img(img)
+        # img = check_img(img)
         # for infer pdf file
         if isinstance(img, list):
             if self.page_num > len(img) or self.page_num == 0:
@@ -222,8 +226,10 @@ class PaddleOCR(predict_system.TextSystem):
             return ocr_res
 
 
-def main(input_path):
-    args = parse_args(mMain=True)
+def preprocess_input(input_path: str) -> Union[List[Any], bool]:
+    """
+    ar
+    """
     image_dir = input_path
 
     if is_link(image_dir):
@@ -233,30 +239,29 @@ def main(input_path):
         image_file_list = get_image_file_list(image_dir)
     if len(image_file_list) == 0:
         logger.error('no images find in {}'.format(image_dir))
-        return
+        return image_file_list
 
+    return image_file_list
+
+
+def paddle_det_and_rec(input_path, det=True, rec=False):
+    args = parse_args(mMain=True)
+
+    image_file_list = preprocess_input(input_path)
     engine = PaddleOCR(**args.__dict__)
 
-    for img_path in image_file_list:
-        img_name = os.path.basename(img_path).split('.')[0]
-        logger.info('{}{}{}'.format('*' * 10, img_path, '*' * 10))
-        if args.type == 'ocr':
-            result = engine.ocr(img_path,
-                                det=args.det,
-                                rec=args.rec,
-                                cls=args.use_angle_cls,
-                                bin=args.binarize,
-                                inv=args.invert,
-                                alpha_color=args.alphacolor)
+    if len(image_file_list) > 0:
+        for img_path in image_file_list:
 
+            img = check_img(img_path)
+
+            result = engine.ocr(img,
+                                det=det,
+                                rec=rec)
             print(result)
-            # if result is not None:
-            #     for idx in range(len(result)):
-            #         res = result[idx]
-            #         for line in res:
-            #             logger.info(line)
+            # img_name = os.path.basename(img_path).split('.')[0]
 
 
 if __name__ == '__main__':
     input_path = '/home/vertexml/Documents/test_images/tabular_image_data.jpg'
-    main(input_path=input_path)
+    paddle_det_and_rec(input_path=input_path)
