@@ -18,7 +18,12 @@ import importlib
 
 __dir__ = os.path.dirname(__file__)
 
-import paddle
+# import paddle
+from ocr.get_utils import parse_lang, parse_args, get_model_config, check_img
+from ocr.paddle_ocr_settings import SUPPORT_OCR_MODEL_VERSION, SUPPORT_DET_MODEL, SUPPORT_REC_MODEL
+from ocr.paddle_structure import PPStructure
+
+# from paddleocr import check_img, parse_args
 
 sys.path.append(os.path.join(__dir__, ''))
 
@@ -26,9 +31,9 @@ import cv2
 import logging
 import numpy as np
 from pathlib import Path
-import base64
-from io import BytesIO
-from PIL import Image
+# import base64
+# from io import BytesIO
+# from PIL import Image
 
 
 def _import_file(module_name, file_path, make_importable=False):
@@ -41,7 +46,7 @@ def _import_file(module_name, file_path, make_importable=False):
 
 
 tools = _import_file(
-    'tools', os.path.join(__dir__, 'tools/__init__.py'), make_importable=True)
+    'tools', os.path.join(__dir__, '../tools/__init__.py'), make_importable=True)
 
 ppocr = importlib.import_module('ppocr', 'paddleocr')
 ppstructure = importlib.import_module('ppstructure', 'paddleocr')
@@ -59,24 +64,26 @@ __all__ = [
     'save_structure_res', 'download_with_progressbar', 'to_excel'
 ]
 
+BASE_DIR = os.path.expanduser("~/.paddleocr/")
+
 
 class PaddleOCR(predict_system.TextSystem):
-    def __init__(self, **kwargs):
+    def __init__(self, lang='en', det='DB', rec='', type_='ocr', use_gpu=False, **kwargs):
         """
         paddleocr package
         args:
             **kwargs: other params show in paddleocr --help
         """
-        params = parse_args(mMain=False)
+        params = parse_args(mMain=False)  # parse_args ko import cross check
         params.__dict__.update(**kwargs)
         assert params.ocr_version in SUPPORT_OCR_MODEL_VERSION, "ocr_version must in {}, but get {}".format(
             SUPPORT_OCR_MODEL_VERSION, params.ocr_version)
-        params.use_gpu = check_gpu(params.use_gpu)
+        params.use_gpu = check_gpu(use_gpu)
 
         if not params.show_log:
             logger.setLevel(logging.INFO)
         self.use_angle_cls = params.use_angle_cls
-        lang, det_lang = parse_lang(params.lang)
+        lang, det_lang = parse_lang(lang)
 
         # init model dir
         det_model_config = get_model_config('OCR', params.ocr_version, 'det',
@@ -85,29 +92,37 @@ class PaddleOCR(predict_system.TextSystem):
             params.det_model_dir,
             os.path.join(BASE_DIR, 'whl', 'det', det_lang),
             det_model_config['url'])
+
+        # init model recognition
         rec_model_config = get_model_config('OCR', params.ocr_version, 'rec',
                                             lang)
         params.rec_model_dir, rec_url = confirm_model_dir_url(
             params.rec_model_dir,
             os.path.join(BASE_DIR, 'whl', 'rec', lang), rec_model_config['url'])
+
+        """
         cls_model_config = get_model_config('OCR', params.ocr_version, 'cls',
-                                            'ch')
+                                            'en')
         params.cls_model_dir, cls_url = confirm_model_dir_url(
             params.cls_model_dir,
             os.path.join(BASE_DIR, 'whl', 'cls'), cls_model_config['url'])
+        """
+
         if params.ocr_version in ['PP-OCRv3', 'PP-OCRv4']:
             params.rec_image_shape = "3, 48, 320"
         else:
             params.rec_image_shape = "3, 32, 320"
+
         # download model if using paddle infer
         if not params.use_onnx:
             maybe_download(params.det_model_dir, det_url)
             maybe_download(params.rec_model_dir, rec_url)
-            maybe_download(params.cls_model_dir, cls_url)
+            # maybe_download(params.cls_model_dir, cls_url)
 
         if params.det_algorithm not in SUPPORT_DET_MODEL:
             logger.error('det_algorithm must in {}'.format(SUPPORT_DET_MODEL))
             sys.exit(0)
+
         if params.rec_algorithm not in SUPPORT_REC_MODEL:
             logger.error('rec_algorithm must in {}'.format(SUPPORT_REC_MODEL))
             sys.exit(0)
@@ -124,8 +139,8 @@ class PaddleOCR(predict_system.TextSystem):
     def ocr(self,
             img,
             det=True,
-            rec=True,
-            cls=True,
+            rec=False,
+            cls=False,
             bin=False,
             inv=False,
             alpha_color=(255, 255, 255)):
@@ -169,7 +184,7 @@ class PaddleOCR(predict_system.TextSystem):
         if det and rec:
             ocr_res = []
             for idx, img in enumerate(imgs):
-                img = preprocess_image(img)
+                # img = preprocess_image(img)
                 dt_boxes, rec_res, _ = self.__call__(img, cls)
                 if not dt_boxes and not rec_res:
                     ocr_res.append(None)
@@ -207,24 +222,20 @@ class PaddleOCR(predict_system.TextSystem):
             return ocr_res
 
 
-def main():
-    # for cmd
+def main(input_path):
     args = parse_args(mMain=True)
-    image_dir = args.image_dir
+    image_dir = input_path
+
     if is_link(image_dir):
         download_with_progressbar(image_dir, 'tmp.jpg')
         image_file_list = ['tmp.jpg']
     else:
-        image_file_list = get_image_file_list(args.image_dir)
+        image_file_list = get_image_file_list(image_dir)
     if len(image_file_list) == 0:
-        logger.error('no images find in {}'.format(args.image_dir))
+        logger.error('no images find in {}'.format(image_dir))
         return
-    if args.type == 'ocr':
-        engine = PaddleOCR(**(args.__dict__))
-    elif args.type == 'structure':
-        engine = PPStructure(**(args.__dict__))
-    else:
-        raise NotImplementedError
+
+    engine = PaddleOCR(**args.__dict__)
 
     for img_path in image_file_list:
         img_name = os.path.basename(img_path).split('.')[0]
@@ -237,74 +248,15 @@ def main():
                                 bin=args.binarize,
                                 inv=args.invert,
                                 alpha_color=args.alphacolor)
-            if result is not None:
-                for idx in range(len(result)):
-                    res = result[idx]
-                    for line in res:
-                        logger.info(line)
-        elif args.type == 'structure':
-            img, flag_gif, flag_pdf = check_and_read(img_path)
-            if not flag_gif and not flag_pdf:
-                img = cv2.imread(img_path)
 
-            if args.recovery and args.use_pdf2docx_api and flag_pdf:
-                from pdf2docx.converter import Converter
-                docx_file = os.path.join(args.output,
-                                         '{}.docx'.format(img_name))
-                cv = Converter(img_path)
-                cv.convert(docx_file)
-                cv.close()
-                logger.info('docx save to {}'.format(docx_file))
-                continue
-
-            if not flag_pdf:
-                if img is None:
-                    logger.error("error in loading image:{}".format(img_path))
-                    continue
-                img_paths = [[img_path, img]]
-            else:
-                img_paths = []
-                for index, pdf_img in enumerate(img):
-                    os.makedirs(
-                        os.path.join(args.output, img_name), exist_ok=True)
-                    pdf_img_path = os.path.join(
-                        args.output, img_name,
-                        img_name + '_' + str(index) + '.jpg')
-                    cv2.imwrite(pdf_img_path, pdf_img)
-                    img_paths.append([pdf_img_path, pdf_img])
-
-            all_res = []
-            for index, (new_img_path, img) in enumerate(img_paths):
-                logger.info('processing {}/{} page:'.format(index + 1,
-                                                            len(img_paths)))
-                new_img_name = os.path.basename(new_img_path).split('.')[0]
-                result = engine(img, img_idx=index)
-                save_structure_res(result, args.output, img_name, index)
-
-                if args.recovery and result != []:
-                    from copy import deepcopy
-                    from ppstructure.recovery.recovery_to_doc import sorted_layout_boxes
-                    h, w, _ = img.shape
-                    result_cp = deepcopy(result)
-                    result_sorted = sorted_layout_boxes(result_cp, w)
-                    all_res += result_sorted
-
-            if args.recovery and all_res != []:
-                try:
-                    from ppstructure.recovery.recovery_to_doc import convert_info_docx
-                    convert_info_docx(img, all_res, args.output, img_name)
-                except Exception as ex:
-                    logger.error(
-                        "error in layout recovery image:{}, err msg: {}".format(
-                            img_name, ex))
-                    continue
-
-            for item in all_res:
-                item.pop('img')
-                item.pop('res')
-                logger.info(item)
-            logger.info('result save to {}'.format(args.output))
+            print(result)
+            # if result is not None:
+            #     for idx in range(len(result)):
+            #         res = result[idx]
+            #         for line in res:
+            #             logger.info(line)
 
 
 if __name__ == '__main__':
-    main()
+    input_path = '/home/vertexml/Documents/test_images/tabular_image_data.jpg'
+    main(input_path=input_path)
