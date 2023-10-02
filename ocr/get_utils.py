@@ -1,10 +1,32 @@
+import base64
+import sys
+from io import BytesIO
+
+import cv2
+import numpy as np
+from PIL import Image
+
+from ocr.paddle_ocr_settings import SUPPORT_OCR_MODEL_VERSION, DEFAULT_OCR_MODEL_VERSION, \
+    DEFAULT_STRUCTURE_MODEL_VERSION, MODEL_URLS
+from paddleocr import SUPPORT_STRUCTURE_MODEL_VERSION
+from ppocr.utils.network import is_link, download_with_progressbar
+from ppocr.utils.utility import check_and_read
+from ppstructure.utility import init_args
+
+from tools.infer.utility import draw_ocr, str2bool, check_gpu
+from ppocr.utils.logging import get_logger
+from typing import Optional
+
+logger = get_logger()
+
+
 def parse_args(mMain=True):
     import argparse
     parser = init_args()
     parser.add_help = mMain
-    parser.add_argument("--lang", type=str, default='ch')
-    parser.add_argument("--det", type=str2bool, default=True)
-    parser.add_argument("--rec", type=str2bool, default=True)
+    # parser.add_argument("--lang", type=str, default='ch')
+    # parser.add_argument("--det", type=str2bool, default=True)
+    # parser.add_argument("--rec", type=str2bool, default=True)
     parser.add_argument("--type", type=str, default='ocr')
     parser.add_argument(
         "--ocr_version",
@@ -113,7 +135,11 @@ def img_decode(content: bytes):
     return cv2.imdecode(np_arr, cv2.IMREAD_UNCHANGED)
 
 
-def check_img(img):
+def check_img(img: str) -> Optional[np.ndarray]:
+    """
+    Takes img: It checks whether its bytes, link or ndarray.
+    If we send rgb image, this function will simply return the image as it is.
+    """
     if isinstance(img, bytes):
         img = img_decode(img)
     if isinstance(img, str):
@@ -122,8 +148,13 @@ def check_img(img):
             download_with_progressbar(img, 'tmp.jpg')
             img = 'tmp.jpg'
         image_file = img
-        img, flag_gif, flag_pdf = check_and_read(image_file)
-        if not flag_gif and not flag_pdf:
+
+        img, flag_gif, flag_pdf, flag_img = check_and_read(image_file)
+
+        if flag_img:
+            return img if len(img.shape) == 3 else cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
+        if not flag_gif and not flag_pdf and not flag_img:
             with open(image_file, 'rb') as f:
                 img_str = f.read()
                 img = img_decode(img_str)
@@ -147,7 +178,8 @@ def check_img(img):
         if img is None:
             logger.error("error in loading image:{}".format(image_file))
             return None
-    if isinstance(img, np.ndarray) and len(img.shape) == 2:
-        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
+    # if isinstance(img, np.ndarray) and len(img.shape) == 2:
+    #     img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
     return img
