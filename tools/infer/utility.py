@@ -55,10 +55,11 @@ def init_args():
     # parser.add_argument("--det_algorithm", type=str, default='DB++')  # changed to DB++
 
     ############################################################
+    parser.add_argument("--det_model_dir", type=str, default="../pretrained_models/detection/")
     # parser.add_argument("--det_model_dir", type=str, default="/home/vertexml/Downloads/paddle_all_downloads"
     #                                                          "/table_data_specific/en_ppocr_mobile_v2.0_table_det_infer")
-    parser.add_argument("--det_model_dir", type=str, default="/home/vertexml/Downloads/paddle_all_downloads"
-                                                             "/general_det_and_rec/en_PP-OCRv3_det_infer")
+    # parser.add_argument("--det_model_dir", type=str, default="/home/vertexml/Downloads/paddle_all_downloads"
+    #                                                          "/general_det_and_rec/en_PP-OCRv3_det_infer")
 
     ###############################################################
     parser.add_argument("--det_limit_side_len", type=float, default=960)
@@ -97,8 +98,9 @@ def init_args():
     # params for text recognizer
 
     parser.add_argument("--rec_algorithm", type=str, default='SVTR_LCNet')
-    parser.add_argument("--rec_model_dir", type=str, default="/home/vertexml/Downloads/paddle_all_downloads"
-                                                             "/general_det_and_rec/en_PP-OCRv3_rec_infer")
+    parser.add_argument("--rec_model_dir", type=str, default="../pretrained_models/recognition")
+    # parser.add_argument("--rec_model_dir", type=str, default="/home/vertexml/Downloads/paddle_all_downloads"
+    #                                                          "/general_det_and_rec/en_PP-OCRv3_rec_infer")
     # parser.add_argument("--rec_image_inverse", type=str2bool, default=True)
     parser.add_argument("--rec_image_inverse", type=str2bool, default=False)
     parser.add_argument("--rec_image_shape", type=str, default="3, 48, 320")
