@@ -58,6 +58,9 @@ def _check_image_file(path):
 
 
 def get_image_file_list(img_file):
+    """
+
+    """
     imgs_lists = []
     if img_file is None or not os.path.exists(img_file):
         raise Exception("not found any img file in {}".format(img_file))
@@ -105,7 +108,7 @@ def check_and_read(img_path):
         if len(frame.shape) == 2 or frame.shape[-1] == 1:
             frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
         imgvalue = frame[:, :, ::-1]
-        return imgvalue, True, False
+        return imgvalue, True, False, False
     elif os.path.basename(img_path)[-3:].lower() == 'pdf':
         import fitz
         from PIL import Image
@@ -123,8 +126,13 @@ def check_and_read(img_path):
                 img = Image.frombytes("RGB", [pm.width, pm.height], pm.samples)
                 img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
                 imgs.append(img)
-            return imgs, False, True
-    return None, False, False
+            return imgs, False, True, False
+
+    elif os.path.basename(img_path)[-3:].lower() == 'jpg' or os.path.basename(img_path)[-4:].lower() == 'jpeg':
+        img = cv2.imread(img_path)
+        return img, False, False, True
+
+    return None, False, False, False
 
 
 def load_vqa_bio_label_maps(label_map_path):
