@@ -210,7 +210,7 @@ class PaddleOCR(predict_system.TextSystem):
             return ocr_res
         else:
             ocr_res = []
-            cls_res = []
+            cls_res = []git
             for idx, img in enumerate(imgs):
                 if not isinstance(img, list):
                     img = preprocess_image(img)
