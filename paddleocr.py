@@ -42,6 +42,7 @@ def _import_file(module_name, file_path, make_importable=False):
 
 tools = _import_file(
     'tools', os.path.join(__dir__, 'tools/__init__.py'), make_importable=True)
+
 ppocr = importlib.import_module('ppocr', 'paddleocr')
 ppstructure = importlib.import_module('ppstructure', 'paddleocr')
 from ppocr.utils.logging import get_logger
@@ -73,83 +74,83 @@ MODEL_URLS = {
             'det': {
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv4/chinese/ch_PP-OCRv4_det_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv4/chinese/ch_PP-OCRv4_det_infer.tar',
                 },
                 'en': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_det_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_det_infer.tar',
                 },
                 'ml': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/Multilingual_PP-OCRv3_det_infer.tar'
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/Multilingual_PP-OCRv3_det_infer.tar'
                 }
             },
             'rec': {
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv4/chinese/ch_PP-OCRv4_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv4/chinese/ch_PP-OCRv4_rec_infer.tar',
                     'dict_path': './ppocr/utils/ppocr_keys_v1.txt'
                 },
                 'en': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv4/english/en_PP-OCRv4_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv4/english/en_PP-OCRv4_rec_infer.tar',
                     'dict_path': './ppocr/utils/en_dict.txt'
                 },
                 'korean': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/korean_PP-OCRv4_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/korean_PP-OCRv4_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/korean_dict.txt'
                 },
                 'japan': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/japan_PP-OCRv4_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/japan_PP-OCRv4_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/japan_dict.txt'
                 },
                 'chinese_cht': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/chinese_cht_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/chinese_cht_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/chinese_cht_dict.txt'
                 },
                 'ta': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/ta_PP-OCRv4_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/ta_PP-OCRv4_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/ta_dict.txt'
                 },
                 'te': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/te_PP-OCRv4_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/te_PP-OCRv4_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/te_dict.txt'
                 },
                 'ka': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/ka_PP-OCRv4_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/ka_PP-OCRv4_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/ka_dict.txt'
                 },
                 'latin': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/latin_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/latin_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/latin_dict.txt'
                 },
                 'arabic': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/arabic_PP-OCRv4_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/arabic_PP-OCRv4_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/arabic_dict.txt'
                 },
                 'cyrillic': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/cyrillic_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/cyrillic_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/cyrillic_dict.txt'
                 },
                 'devanagari': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/devanagari_PP-OCRv4_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv4/multilingual/devanagari_PP-OCRv4_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/devanagari_dict.txt'
                 },
             },
             'cls': {
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar',
                 }
             },
         },
@@ -157,83 +158,83 @@ MODEL_URLS = {
             'det': {
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_det_infer.tar',
                 },
                 'en': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_det_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_det_infer.tar',
                 },
                 'ml': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/Multilingual_PP-OCRv3_det_infer.tar'
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/Multilingual_PP-OCRv3_det_infer.tar'
                 }
             },
             'rec': {
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/chinese/ch_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/ppocr_keys_v1.txt'
                 },
                 'en': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/english/en_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/en_dict.txt'
                 },
                 'korean': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/korean_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/korean_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/korean_dict.txt'
                 },
                 'japan': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/japan_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/japan_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/japan_dict.txt'
                 },
                 'chinese_cht': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/chinese_cht_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/chinese_cht_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/chinese_cht_dict.txt'
                 },
                 'ta': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/ta_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/ta_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/ta_dict.txt'
                 },
                 'te': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/te_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/te_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/te_dict.txt'
                 },
                 'ka': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/ka_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/ka_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/ka_dict.txt'
                 },
                 'latin': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/latin_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/latin_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/latin_dict.txt'
                 },
                 'arabic': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/arabic_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/arabic_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/arabic_dict.txt'
                 },
                 'cyrillic': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/cyrillic_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/cyrillic_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/cyrillic_dict.txt'
                 },
                 'devanagari': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/devanagari_PP-OCRv3_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv3/multilingual/devanagari_PP-OCRv3_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/devanagari_dict.txt'
                 },
             },
             'cls': {
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar',
                 }
             },
         },
@@ -241,20 +242,20 @@ MODEL_URLS = {
             'det': {
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv2/chinese/ch_PP-OCRv2_det_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv2/chinese/ch_PP-OCRv2_det_infer.tar',
                 },
             },
             'rec': {
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/PP-OCRv2/chinese/ch_PP-OCRv2_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/PP-OCRv2/chinese/ch_PP-OCRv2_rec_infer.tar',
                     'dict_path': './ppocr/utils/ppocr_keys_v1.txt'
                 }
             },
             'cls': {
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar',
                 }
             },
         },
@@ -262,98 +263,98 @@ MODEL_URLS = {
             'det': {
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_det_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_det_infer.tar',
                 },
                 'en': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/en_ppocr_mobile_v2.0_det_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/en_ppocr_mobile_v2.0_det_infer.tar',
                 },
                 'structure': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/table/en_ppocr_mobile_v2.0_table_det_infer.tar'
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/table/en_ppocr_mobile_v2.0_table_det_infer.tar'
                 }
             },
             'rec': {
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/ppocr_keys_v1.txt'
                 },
                 'en': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/en_number_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/en_number_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/en_dict.txt'
                 },
                 'french': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/french_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/french_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/french_dict.txt'
                 },
                 'german': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/german_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/german_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/german_dict.txt'
                 },
                 'korean': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/korean_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/korean_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/korean_dict.txt'
                 },
                 'japan': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/japan_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/japan_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/japan_dict.txt'
                 },
                 'chinese_cht': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/chinese_cht_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/chinese_cht_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/chinese_cht_dict.txt'
                 },
                 'ta': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/ta_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/ta_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/ta_dict.txt'
                 },
                 'te': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/te_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/te_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/te_dict.txt'
                 },
                 'ka': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/ka_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/ka_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/ka_dict.txt'
                 },
                 'latin': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/latin_ppocr_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/latin_ppocr_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/latin_dict.txt'
                 },
                 'arabic': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/arabic_ppocr_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/arabic_ppocr_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/arabic_dict.txt'
                 },
                 'cyrillic': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/cyrillic_ppocr_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/cyrillic_ppocr_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/cyrillic_dict.txt'
                 },
                 'devanagari': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/devanagari_ppocr_mobile_v2.0_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/multilingual/devanagari_ppocr_mobile_v2.0_rec_infer.tar',
                     'dict_path': './ppocr/utils/dict/devanagari_dict.txt'
                 },
                 'structure': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/table/en_ppocr_mobile_v2.0_table_rec_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/table/en_ppocr_mobile_v2.0_table_rec_infer.tar',
                     'dict_path': 'ppocr/utils/dict/table_dict.txt'
                 }
             },
             'cls': {
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar',
                 }
             },
         }
@@ -363,7 +364,7 @@ MODEL_URLS = {
             'table': {
                 'en': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/dygraph_v2.0/table/en_ppocr_mobile_v2.0_table_structure_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/dygraph_v2.0/table/en_ppocr_mobile_v2.0_table_structure_infer.tar',
                     'dict_path': 'ppocr/utils/dict/table_structure_dict.txt'
                 }
             }
@@ -372,27 +373,27 @@ MODEL_URLS = {
             'table': {
                 'en': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/en_ppstructure_mobile_v2.0_SLANet_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/en_ppstructure_mobile_v2.0_SLANet_infer.tar',
                     'dict_path': 'ppocr/utils/dict/table_structure_dict.txt'
                 },
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/ch_ppstructure_mobile_v2.0_SLANet_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/ppstructure/models/slanet/ch_ppstructure_mobile_v2.0_SLANet_infer.tar',
                     'dict_path': 'ppocr/utils/dict/table_structure_dict_ch.txt'
                 }
             },
             'layout': {
                 'en': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/ppstructure/models/layout/picodet_lcnet_x1_0_fgd_layout_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/ppstructure/models/layout/picodet_lcnet_x1_0_fgd_layout_infer.tar',
                     'dict_path':
-                    'ppocr/utils/dict/layout_dict/layout_publaynet_dict.txt'
+                        'ppocr/utils/dict/layout_dict/layout_publaynet_dict.txt'
                 },
                 'ch': {
                     'url':
-                    'https://paddleocr.bj.bcebos.com/ppstructure/models/layout/picodet_lcnet_x1_0_fgd_layout_cdla_infer.tar',
+                        'https://paddleocr.bj.bcebos.com/ppstructure/models/layout/picodet_lcnet_x1_0_fgd_layout_cdla_infer.tar',
                     'dict_path':
-                    'ppocr/utils/dict/layout_dict/layout_cdla_dict.txt'
+                        'ppocr/utils/dict/layout_dict/layout_cdla_dict.txt'
                 }
             }
         }
@@ -414,9 +415,9 @@ def parse_args(mMain=True):
         choices=SUPPORT_OCR_MODEL_VERSION,
         default='PP-OCRv4',
         help='OCR Model version, the current model support list is as follows: '
-        '1. PP-OCRv4/v3 Support Chinese and English detection and recognition model, and direction classifier model'
-        '2. PP-OCRv2 Support Chinese detection and recognition model. '
-        '3. PP-OCR support Chinese detection, recognition and direction classifier and multilingual recognition model.'
+             '1. PP-OCRv4/v3 Support Chinese and English detection and recognition model, and direction classifier model'
+             '2. PP-OCRv2 Support Chinese detection and recognition model. '
+             '3. PP-OCR support Chinese detection, recognition and direction classifier and multilingual recognition model.'
     )
     parser.add_argument(
         "--structure_version",
@@ -424,12 +425,12 @@ def parse_args(mMain=True):
         choices=SUPPORT_STRUCTURE_MODEL_VERSION,
         default='PP-StructureV2',
         help='Model version, the current model support list is as follows:'
-        ' 1. PP-Structure Support en table structure model.'
-        ' 2. PP-StructureV2 Support ch and en table structure model.')
+             ' 1. PP-Structure Support en table structure model.'
+             ' 2. PP-StructureV2 Support ch and en table structure model.')
 
     for action in parser._actions:
         if action.dest in [
-                'rec_char_dict_path', 'table_char_dict_path', 'layout_dict_path'
+            'rec_char_dict_path', 'table_char_dict_path', 'layout_dict_path'
         ]:
             action.default = None
     if mMain:
@@ -467,7 +468,7 @@ def parse_lang(lang):
         lang = "devanagari"
     assert lang in MODEL_URLS['OCR'][DEFAULT_OCR_MODEL_VERSION][
         'rec'], 'param lang must in {}, but got {}'.format(
-            MODEL_URLS['OCR'][DEFAULT_OCR_MODEL_VERSION]['rec'].keys(), lang)
+        MODEL_URLS['OCR'][DEFAULT_OCR_MODEL_VERSION]['rec'].keys(), lang)
     if lang == "ch":
         det_lang = "ch"
     elif lang == 'structure':
@@ -865,3 +866,9 @@ def main():
                 item.pop('res')
                 logger.info(item)
             logger.info('result save to {}'.format(args.output))
+
+
+if __name__ == "__main__":
+    print(len(sys.path))
+    for i in sys.path:
+        print(i)
