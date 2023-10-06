@@ -237,6 +237,7 @@ def visualize_bboxes(img_path, result):
 
 
 if __name__ == "__main__":
+
     image_path = "/home/vertexaiml/Downloads/ocr_test_image/nepal.png"
     # image_path = "/home/vertexaiml/Downloads/4 page.jpg"
     # image_path = "/home/vertexaiml/Downloads/ocr_test_image/blank_white.jpg"
