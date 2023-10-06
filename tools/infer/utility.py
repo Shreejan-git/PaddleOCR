@@ -49,7 +49,7 @@ def init_args():
     # params for text detector
     parser.add_argument("--image_dir", type=str)
     parser.add_argument("--page_num", type=int, default=0)
-    parser.add_argument("--det_algorithm", type=str, default='DB')
+    parser.add_argument("--det_algorithm", type=str, default='DB++')
     parser.add_argument("--det_model_dir", type=str)
     parser.add_argument("--det_limit_side_len", type=float, default=960)
     parser.add_argument("--det_limit_type", type=str, default='max')
@@ -94,7 +94,8 @@ def init_args():
     parser.add_argument(
         "--rec_char_dict_path",
         type=str,
-        default="./ppocr/utils/ppocr_keys_v1.txt")
+        # default="./ppocr/utils/ppocr_keys_v1.txt")
+        default="/home/vertexaiml/Documents/PaddleOCR/ppocr/utils/en_dict.txt")
     parser.add_argument("--use_space_char", type=str2bool, default=True)
     parser.add_argument(
         "--vis_font_path", type=str, default="./doc/fonts/simfang.ttf")
