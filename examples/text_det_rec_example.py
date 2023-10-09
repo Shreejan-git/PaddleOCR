@@ -1,15 +1,16 @@
-import os
+from typing import Optional, List
+
 import cv2
-from ocr import PaddleOCR
-from ocr.config import parse_args
+from ocr import PaddleOCR, parse_args
 from ppocr.utils.network import is_link, download_with_progressbar
 from ppocr.utils.utility import get_image_file_list
 
 from ppocr.utils.logging import get_logger
+
 logger = get_logger()
 
 
-def paddle_det_and_rec(input_file=None, det=True, rec=False):
+def paddle_det_and_rec(input_file: Optional[str] = None, det: bool = True, rec: bool = False):
     args = parse_args(mMain=True)
 
     if is_link(input_file):
@@ -24,7 +25,7 @@ def paddle_det_and_rec(input_file=None, det=True, rec=False):
     engine = PaddleOCR(**args.__dict__)
 
     for img_path in image_file_list:
-        img_name = os.path.basename(img_path).split('.')[0]
+        # img_name = os.path.basename(img_path).split('.')[0]
         logger.info('{}{}{}'.format('*' * 10, img_path, '*' * 10))
         result = engine.ocr(img_path,
                             det=det,
@@ -33,26 +34,25 @@ def paddle_det_and_rec(input_file=None, det=True, rec=False):
                             bin=args.binarize,
                             inv=args.invert,
                             alpha_color=args.alphacolor)
-        if det and rec:
-            for rec_result in result:
-                print(rec_result)
-        elif det and not rec:
-            if result is not None:
-                # for idx in range(len(result)):
-                #     res = result[idx]
-                #     for line in res:
-                #         logger.info(line)
 
-                visualize_bboxes(img_path, result)
-            else:
-                print("Could not detect anything")
+        if rec:
+            for pages in result:
+                bboxes = []
+                for page in pages:
+                    print(page)
+                    bboxes.append(page[0])
+                visualize_bboxes(img_path=img_path, result=bboxes, rec=rec)
+
+        else:
+            visualize_bboxes(img_path=img_path, result=result, rec=rec)
 
 
-def visualize_bboxes(img_path, result):
+def visualize_bboxes(img_path: str, result: List, rec: bool = False):
     img = cv2.imread(img_path)
-    result = result[0]
+    if not rec:
+        result = result[0]
+
     for bbox in result:
-        # print(bbox)
         l, t = bbox[0]
         r, b = bbox[2]
 
@@ -67,4 +67,4 @@ if __name__ == "__main__":
     # image_path = "/home/vertexaiml/Downloads/ocr_test_image/nepal.png"
     image_path = "/home/vertexaiml/Downloads/4 page.jpg"
     # image_path = "/home/vertexaiml/Downloads/ocr_test_image/blank_white.jpg"
-    paddle_det_and_rec(input_file=image_path, det=True, rec=False)
+    paddle_det_and_rec(input_file=image_path, det=True, rec=True)
