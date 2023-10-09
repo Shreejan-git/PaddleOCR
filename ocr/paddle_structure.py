@@ -3,6 +3,8 @@
 #
 #
 #
+class PPStructure:
+    pass
 # class PPStructure(StructureSystem):
 #     def __init__(self, **kwargs):
 #         params = parse_args(mMain=False)
