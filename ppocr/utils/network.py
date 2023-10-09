@@ -81,7 +81,7 @@ def maybe_download_params(model_path):
     return tmp_path
 
 
-def is_link(s):
+def is_link(s: str):
     return s is not None and s.startswith('http')
 
 
