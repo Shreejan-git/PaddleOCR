@@ -1,7 +1,7 @@
 from .paddle_ocr import *
 from .paddle_structure import *
-from .config import *
-from .utils import *
+# from .config import *
+# from .utils import *
 
 """
 This package contains the module's (paddle ocr and paddle structure) entry point and their utility functions.

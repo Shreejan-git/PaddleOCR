@@ -38,7 +38,8 @@ def init_args():
     parser.add_argument(
         "--layout_dict_path",
         type=str,
-        default="../ppocr/utils/dict/layout_dict/layout_publaynet_dict.txt")
+        # default="../ppocr/utils/dict/layout_dict/layout_publaynet_dict.txt")
+        default="/home/vertexaiml/Documents/PaddleOCR/ppocr/utils/dict/layout_dict/layout_publaynet_dict.txt")
     parser.add_argument(
         "--layout_score_threshold",
         type=float,
@@ -80,7 +81,7 @@ def init_args():
     parser.add_argument(
         "--table",
         type=str2bool,
-        default=True,
+        default=False,
         help='In the forward, whether the table area uses table recognition')
     parser.add_argument(
         "--ocr",

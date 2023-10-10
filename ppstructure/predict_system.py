@@ -111,6 +111,7 @@ class StructureSystem(object):
             if self.layout_predictor is not None:
                 layout_res, elapse = self.layout_predictor(img)
                 time_dict['layout'] += elapse
+
             else:
                 h, w = ori_im.shape[:2]
                 layout_res = [dict(bbox=None, label='table')]
