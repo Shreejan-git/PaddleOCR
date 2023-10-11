@@ -40,7 +40,7 @@ logger = get_logger()
 
 
 class StructureSystem(object):
-    def __init__(self, args):
+    def __init__(self, args, layout=True, table=False, ocr=True):
         self.mode = args.mode
         self.recovery = args.recovery
 
@@ -53,7 +53,7 @@ class StructureSystem(object):
         if self.mode == 'structure':
             if not args.show_log:
                 logger.setLevel(logging.INFO)
-            if args.layout == False and args.ocr == True:
+            if layout == False and ocr == True:
                 args.ocr = False
                 logger.warning(
                     "When args.layout is false, args.ocr is automatically set to false"
@@ -63,11 +63,11 @@ class StructureSystem(object):
             self.layout_predictor = None
             self.text_system = None
             self.table_system = None
-            if args.layout:
+            if layout:
                 self.layout_predictor = LayoutPredictor(args)
-                if args.ocr:
+                if ocr:
                     self.text_system = TextSystem(args)
-            if args.table:
+            if table:
                 if self.text_system is not None:
                     self.table_system = TableSystem(
                         args, self.text_system.text_detector,
@@ -123,14 +123,6 @@ class StructureSystem(object):
                     x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                     roi_img = ori_im[y1:y2, x1:x2, :]
 
-                    # img = cv2.rectangle(ori_im, (x1, y1), (x2, y2), [255, 0, 0], 2)
-                    #
-                    # cv2.namedWindow('img', cv2.WINDOW_NORMAL)
-                    # cv2.imshow('img', img)
-                    #
-                    # cv2.namedWindow('roi', cv2.WINDOW_NORMAL)
-                    # cv2.imshow('roi', roi_img)
-                    # cv2.waitKey()
                 else:
                     x1, y1, x2, y2 = 0, 0, w, h
                     roi_img = ori_im

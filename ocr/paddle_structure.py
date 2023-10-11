@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import logging
+import random
 
 import cv2
 
@@ -18,7 +19,7 @@ BASE_DIR = os.path.expanduser("~/.paddleocr/")
 
 
 class PPStructure(StructureSystem):
-    def __init__(self, lang='en', use_gpu=False, **kwargs):
+    def __init__(self, lang='en', use_gpu=False, layout=True, table=False, **kwargs):
         params = parse_args(mMain=False)
         params.__dict__.update(**kwargs)
         assert params.structure_version in SUPPORT_STRUCTURE_MODEL_VERSION, "structure_version must in {}, but get {}".format(
@@ -67,7 +68,6 @@ class PPStructure(StructureSystem):
         maybe_download(params.layout_model_dir, layout_url)
 
         if params.rec_char_dict_path is None:
-
             params.rec_char_dict_path = '/home/vertexaiml/Documents/PaddleOCR/ppocr/utils/en_dict.txt'
 
             # params.rec_char_dict_path = str(
@@ -86,102 +86,11 @@ class PPStructure(StructureSystem):
             #     Path(__file__).parent / layout_model_config['dict_path'])
 
         logger.debug(params)
-        super().__init__(params)
+        super().__init__(params, layout=layout, table=table, ocr=True)
 
     def __call__(self, img, return_ocr_result_in_table=True, img_idx=0):
         img = check_img(img)
         res, _ = super().__call__(
             img, return_ocr_result_in_table, img_idx=img_idx)
 
-        print(res)
         return res
-
-
-def main(file_path):
-    # for cmd
-    args = parse_args(mMain=True)
-    # file_path = args.image_dir
-    if is_link(file_path):
-        download_with_progressbar(file_path, 'tmp.jpg')
-        image_file_list = ['tmp.jpg']
-    else:
-        image_file_list = get_image_file_list(file_path)
-    if len(image_file_list) == 0:
-        logger.error('no images find in {}'.format(file_path))
-        return
-    #######################################################################
-    engine = PPStructure(**args.__dict__)
-
-    for img_path in image_file_list:
-        img_name = os.path.basename(img_path).split('.')[0]
-        logger.info('{}{}{}'.format('*' * 10, img_path, '*' * 10))
-
-        img, flag_gif, flag_pdf = check_and_read(img_path)
-        if not flag_gif and not flag_pdf:
-            img = cv2.imread(img_path)
-
-        if args.recovery and args.use_pdf2docx_api and flag_pdf:
-            from pdf2docx.converter import Converter
-            docx_file = os.path.join(args.output,
-                                     '{}.docx'.format(img_name))
-            cv = Converter(img_path)
-            cv.convert(docx_file)
-            cv.close()
-            logger.info('docx save to {}'.format(docx_file))
-            continue
-
-        if not flag_pdf:
-            if img is None:
-                logger.error("error in loading image:{}".format(img_path))
-                continue
-            img_paths = [[img_path, img]]
-        else:
-            img_paths = []
-            for index, pdf_img in enumerate(img):
-                os.makedirs(
-                    os.path.join(args.output, img_name), exist_ok=True)
-                pdf_img_path = os.path.join(
-                    args.output, img_name,
-                    img_name + '_' + str(index) + '.jpg')
-                cv2.imwrite(pdf_img_path, pdf_img)
-                img_paths.append([pdf_img_path, pdf_img])
-
-        all_res = []
-        for index, (new_img_path, img) in enumerate(img_paths):
-            logger.info('processing {}/{} page:'.format(index + 1,
-                                                        len(img_paths)))
-            new_img_name = os.path.basename(new_img_path).split('.')[0]
-            result = engine(img, img_idx=index)
-            # print(result)
-            save_structure_res(result, args.output, img_name, index)
-
-            if args.recovery and result != []:
-                from copy import deepcopy
-                from ppstructure.recovery.recovery_to_doc import sorted_layout_boxes
-                h, w, _ = img.shape
-                result_cp = deepcopy(result)
-                result_sorted = sorted_layout_boxes(result_cp, w)
-                all_res += result_sorted
-
-        if args.recovery and all_res != []:
-            try:
-                from ppstructure.recovery.recovery_to_doc import convert_info_docx
-                convert_info_docx(img, all_res, args.output, img_name)
-            except Exception as ex:
-                logger.error(
-                    "error in layout recovery image:{}, err msg: {}".format(
-                        img_name, ex))
-                continue
-
-        for item in all_res:
-            item.pop('img')
-            item.pop('res')
-            logger.info(item)
-        logger.info('result save to {}'.format(args.output))
-
-
-if __name__ == "__main__":
-    file_path = "/home/vertexaiml/Downloads/ocr_test_image/4 page.jpg"
-    file_path = "/home/vertexaiml/Downloads/ocr_test_image/test_invoice.png"
-    file_path = "/home/vertexaiml/Downloads/ocr_test_image/layout_testing_input.png"
-    main(file_path=file_path)
