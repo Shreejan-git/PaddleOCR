@@ -122,6 +122,15 @@ class StructureSystem(object):
                     x1, y1, x2, y2 = region['bbox']
                     x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                     roi_img = ori_im[y1:y2, x1:x2, :]
+
+                    # img = cv2.rectangle(ori_im, (x1, y1), (x2, y2), [255, 0, 0], 2)
+                    #
+                    # cv2.namedWindow('img', cv2.WINDOW_NORMAL)
+                    # cv2.imshow('img', img)
+                    #
+                    # cv2.namedWindow('roi', cv2.WINDOW_NORMAL)
+                    # cv2.imshow('roi', roi_img)
+                    # cv2.waitKey()
                 else:
                     x1, y1, x2, y2 = 0, 0, w, h
                     roi_img = ori_im
@@ -200,7 +209,7 @@ def save_structure_res(res, save_folder, img_name, img_idx=0):
             f.write('{}\n'.format(json.dumps(region)))
 
             if region['type'].lower() == 'table' and len(region[
-                    'res']) > 0 and 'html' in region['res']:
+                                                             'res']) > 0 and 'html' in region['res']:
                 excel_path = os.path.join(
                     excel_save_folder,
                     '{}_{}.xlsx'.format(region['bbox'], img_idx))

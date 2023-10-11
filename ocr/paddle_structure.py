@@ -152,6 +152,7 @@ def main(file_path):
                                                         len(img_paths)))
             new_img_name = os.path.basename(new_img_path).split('.')[0]
             result = engine(img, img_idx=index)
+            # print(result)
             save_structure_res(result, args.output, img_name, index)
 
             if args.recovery and result != []:
@@ -182,4 +183,5 @@ def main(file_path):
 if __name__ == "__main__":
     file_path = "/home/vertexaiml/Downloads/ocr_test_image/4 page.jpg"
     file_path = "/home/vertexaiml/Downloads/ocr_test_image/test_invoice.png"
+    file_path = "/home/vertexaiml/Downloads/ocr_test_image/layout_testing_input.png"
     main(file_path=file_path)
