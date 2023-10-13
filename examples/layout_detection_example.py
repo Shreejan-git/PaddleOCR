@@ -19,6 +19,7 @@ def paddle_layout_table_extraction(file_path:str):
     if len(image_file_list) == 0:
         logger.error('no images find in {}'.format(file_path))
         return
+    # engine = PPStructure(lang='che', **args.__dict__)
     engine = PPStructure(**args.__dict__)
 
     for img_path in image_file_list:
@@ -73,7 +74,8 @@ def paddle_layout_table_extraction(file_path:str):
 
 
 if __name__ == "__main__":
-    file_path = "/home/vertexaiml/Downloads/ocr_test_image/4 page.jpg"
-    file_path = "/home/vertexaiml/Downloads/ocr_test_image/test_invoice.png"
-    file_path = "/home/vertexaiml/Downloads/ocr_test_image/layout_testing_input.png"
+    # file_path = "/home/vertexaiml/Downloads/ocr_test_image/4 page.jpg"
+    # file_path = "/home/vertexaiml/Downloads/ocr_test_image/test_invoice.png"
+    # file_path = "/home/vertexaiml/Downloads/ocr_test_image/test_invoice.png"
+    file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Bank_Of_America/Bank of America.pdf"
     paddle_layout_table_extraction(file_path=file_path)

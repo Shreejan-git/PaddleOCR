@@ -34,13 +34,19 @@ def paddle_det_and_rec(input_file: Optional[str] = None, det: bool = True, rec: 
                             bin=args.binarize,
                             inv=args.invert,
                             alpha_color=args.alphacolor)
+        # print(result)
+
+        # for i in result:
+        #     print(i)
+        #     print()
 
         if rec:
-            for pages in result:
+            for page in result:
                 bboxes = []
-                for page in pages:
-                    print(page)
-                    bboxes.append(page[0])
+                for data_in_each_page in page:
+                    print(data_in_each_page)
+                    print()
+                    bboxes.append(data_in_each_page[0])
                 visualize_bboxes(img_path=img_path, result=bboxes, rec=rec)
 
         else:
@@ -60,11 +66,13 @@ def visualize_bboxes(img_path: str, result: List, rec: bool = False):
 
     cv2.namedWindow('img', cv2.WINDOW_NORMAL)
     cv2.imshow('img', img)
-    cv2.waitKey()
+    cv2.waitKey(0)
 
 
 if __name__ == "__main__":
     # image_path = "/home/vertexaiml/Downloads/ocr_test_image/nepal.png"
     image_path = "/home/vertexaiml/Downloads/ocr_test_image/4 page.jpg"
     # image_path = "/home/vertexaiml/Downloads/ocr_test_image/blank_white.jpg"
-    paddle_det_and_rec(input_file=image_path, det=True, rec=True)
+    file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Bank_Of_America/Bank of America.pdf"
+
+    paddle_det_and_rec(input_file=file_path, det=True, rec=True)

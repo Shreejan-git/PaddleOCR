@@ -94,9 +94,9 @@ def alpha_to_color(img, alpha_color=(255, 255, 255)):
         img = cv2.merge((B, G, R))
     return img
 
-def check_and_read(img_path):
-    if os.path.basename(img_path)[-3:].lower() == 'gif':
-        gif = cv2.VideoCapture(img_path)
+def check_and_read(file_path):
+    if os.path.basename(file_path)[-3:].lower() == 'gif':
+        gif = cv2.VideoCapture(file_path)
         ret, frame = gif.read()
         if not ret:
             logger = logging.getLogger('ppocr')
@@ -106,11 +106,12 @@ def check_and_read(img_path):
             frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
         imgvalue = frame[:, :, ::-1]
         return imgvalue, True, False
-    elif os.path.basename(img_path)[-3:].lower() == 'pdf':
+    elif os.path.basename(file_path)[-3:].lower() == 'pdf':
         import fitz
         from PIL import Image
         imgs = []
-        with fitz.open(img_path) as pdf:
+        with fitz.open(file_path) as pdf:
+
             for pg in range(0, pdf.page_count):
                 page = pdf[pg]
                 mat = fitz.Matrix(2, 2)
@@ -122,6 +123,9 @@ def check_and_read(img_path):
 
                 img = Image.frombytes("RGB", [pm.width, pm.height], pm.samples)
                 img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+                # cv2.namedWindow('img', cv2.WINDOW_NORMAL)
+                # cv2.imshow('img', img)
+                # cv2.waitKey(0)
                 imgs.append(img)
             return imgs, False, True
     return None, False, False

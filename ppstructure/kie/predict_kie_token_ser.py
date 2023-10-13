@@ -33,7 +33,8 @@ from ppocr.utils.visual import draw_ser_results
 from ppocr.utils.utility import get_image_file_list, check_and_read
 from ppstructure.utility import parse_args
 
-from paddleocr import PaddleOCR
+# from paddleocr import PaddleOCR
+from ocr.paddle_ocr import PaddleOCR
 
 logger = get_logger()
 
