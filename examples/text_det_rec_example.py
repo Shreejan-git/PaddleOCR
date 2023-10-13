@@ -1,6 +1,8 @@
 from typing import Optional, List
 
 import cv2
+import numpy as np
+
 from ocr import PaddleOCR, parse_args
 from ppocr.utils.network import is_link, download_with_progressbar
 from ppocr.utils.utility import get_image_file_list
@@ -11,6 +13,13 @@ logger = get_logger()
 
 
 def paddle_det_and_rec(input_file: Optional[str] = None, det: bool = True, rec: bool = False):
+    """
+    Implement paddle text detection and recognition based on value in the parameters.
+    params:
+        input_file = File given by the user. None or string of path to the file
+        det = Default True, Detection must be True.
+        rec = Default False.
+    """
     args = parse_args(mMain=True)
 
     if is_link(input_file):
@@ -34,31 +43,35 @@ def paddle_det_and_rec(input_file: Optional[str] = None, det: bool = True, rec: 
                             bin=args.binarize,
                             inv=args.invert,
                             alpha_color=args.alphacolor)
-        # print(result)
-
-        # for i in result:
-        #     print(i)
-        #     print()
 
         if rec:
             for page in result:
                 bboxes = []
-                for data_in_each_page in page:
-                    print(data_in_each_page)
-                    print()
-                    bboxes.append(data_in_each_page[0])
-                visualize_bboxes(img_path=img_path, result=bboxes, rec=rec)
+                img = page[0]
+                det_rec_results = page[1]
+                for data_in_each_page in det_rec_results:
+                    bbox = data_in_each_page[0]
+                    rec_text = det_rec_results[1]
+                    print(rec_text)
+                    bboxes.append(bbox)
+                visualize_bboxes(img=img, bboxes=bboxes, rec=rec)
 
-        else:
-            visualize_bboxes(img_path=img_path, result=result, rec=rec)
+        # else:
+        #     visualize_bboxes(img=img, bboxes=bboxes, rec=rec)
 
 
-def visualize_bboxes(img_path: str, result: List, rec: bool = False):
-    img = cv2.imread(img_path)
+def visualize_bboxes(img: np.ndarray, bboxes: List, rec: bool = False):
+    """
+        Draws the detected bounding boxes round the detected text.
+
+    params:
+        img_path = path to the original image (each page)
+        bboxes = list of all of the bounding boxes of the current page.
+    """
+    # img = cv2.imread(img_path)
     if not rec:
-        result = result[0]
-
-    for bbox in result:
+        bboxes = bboxes[0]
+    for bbox in bboxes:
         l, t = bbox[0]
         r, b = bbox[2]
 
@@ -75,4 +88,5 @@ if __name__ == "__main__":
     # image_path = "/home/vertexaiml/Downloads/ocr_test_image/blank_white.jpg"
     file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Bank_Of_America/Bank of America.pdf"
 
+    # paddle_det_and_rec(input_file=image_path, det=True, rec=True)
     paddle_det_and_rec(input_file=file_path, det=True, rec=True)
