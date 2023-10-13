@@ -124,7 +124,7 @@ class PaddleOCR(predict_system.TextSystem):
                 'Since the angle classifier is not initialized, it will not be used during the forward process'
             )
 
-        img = check_img(img)
+        img = check_img(img)  # img is a list of images (ndarray)
         # for infer pdf file
         if isinstance(img, list):
             if self.page_num > len(img) or self.page_num == 0:
@@ -143,26 +143,33 @@ class PaddleOCR(predict_system.TextSystem):
 
         if det and rec:
             ocr_res = []
-            for idx, img in enumerate(imgs):
+            for idx, img in enumerate(imgs):  # looping on each page
                 img = preprocess_image(img)
                 dt_boxes, rec_res, _ = self.__call__(img, cls)
+
                 if not dt_boxes and not rec_res:
                     ocr_res.append(None)
                     continue
                 tmp_res = [[box.tolist(), res]
                            for box, res in zip(dt_boxes, rec_res)]
-                ocr_res.append(tmp_res)
+
+                # ocr_res.append(tmp_res)
+                ocr_res.append([img, tmp_res])
             return ocr_res
+            # return ocr_res_dict
         elif det and not rec:
             ocr_res = []
-            for idx, img in enumerate(imgs):
+            # ocr_res_dict = {}
+            for idx, img in enumerate(imgs):  # Looping on each page
                 # img = preprocess_image(img)
                 dt_boxes, elapse = self.text_detector(img)
                 if len(dt_boxes) == 0:
-                    ocr_res.append(None)
+                    ocr_res.append([img, None])
                     continue
                 tmp_res = [box.tolist() for box in dt_boxes]
-                ocr_res.append(tmp_res)
+                tmp_res_img = [img, [box.tolist() for box in dt_boxes]]
+                # ocr_res.append(tmp_res)
+                ocr_res.append(tmp_res_img)
             return ocr_res
         else:
             ocr_res = []
