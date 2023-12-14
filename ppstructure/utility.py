@@ -52,13 +52,19 @@ def init_args():
         help="Threshold of nms.")
     # params for kie
     parser.add_argument("--kie_algorithm", type=str, default='LayoutXLM')
-    parser.add_argument("--ser_model_dir", type=str)
-    parser.add_argument("--re_model_dir", type=str)
-    parser.add_argument("--use_visual_backbone", type=str2bool, default=True)
+    # parser.add_argument("--ser_model_dir", type=str)
+    parser.add_argument("--ser_model_dir", type=str, default="/home/vertexaiml/Documents/PaddleOCR"
+                                                             "/pretrained_model_kie/ser_vi_layoutxlm_xfund_infer")
+    # parser.add_argument("--re_model_dir", type=str)
+    parser.add_argument("--re_model_dir", type=str, default="/home/vertexaiml/Documents/PaddleOCR"
+                                                            "/pretrained_model_kie/re_vi_layoutxlm_xfund_infer")
+    # parser.add_argument("--use_visual_backbone", type=str2bool, default=True)  # True hunuhudaina error auxa.
+    parser.add_argument("--use_visual_backbone", type=str2bool, default=False)
     parser.add_argument(
         "--ser_dict_path",
         type=str,
-        default="../train_data/XFUND/class_list_xfun.txt")
+        # default="../train_data/XFUND/class_list_xfun.txt")
+        default="/home/vertexaiml/Desktop/train_data/XFUND/class_list_xfun.txt")
     # need to be None or tb-yx
     parser.add_argument("--ocr_order_method", type=str, default=None)
     # params for inference
@@ -81,7 +87,7 @@ def init_args():
     parser.add_argument(
         "--table",
         type=str2bool,
-        default=False,
+        default=True,
         help='In the forward, whether the table area uses table recognition')
     parser.add_argument(
         "--ocr",

@@ -96,7 +96,7 @@ class LayoutPredictor(object):
                 self.predictor.get_output_handle(output_names[
                     out_idx + num_outs]).copy_to_cpu())
         preds = dict(boxes=np_score_list, boxes_num=np_boxes_list)
-
+        # print(f"{os.path.abspath(__file__)}:")
         post_preds = self.postprocess_op(ori_im, img, preds)
         elapse = time.time() - starttime
         return post_preds, elapse

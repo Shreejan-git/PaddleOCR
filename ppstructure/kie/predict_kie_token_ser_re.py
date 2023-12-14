@@ -52,6 +52,7 @@ class SerRePredictor(object):
     def __call__(self, img):
         starttime = time.time()
         ser_results, ser_inputs, ser_elapse = self.ser_engine(img)
+
         if self.predictor is None:
             return ser_results, ser_elapse
 
@@ -61,7 +62,7 @@ class SerRePredictor(object):
         for idx in range(len(self.input_tensor)):
             self.input_tensor[idx].copy_from_cpu(re_input[idx])
 
-        self.predictor.run()
+        self.predictor.run()  # yeta error airako xa
         outputs = []
         for output_tensor in self.output_tensors:
             output = output_tensor.copy_to_cpu()

@@ -40,7 +40,7 @@ logger = get_logger()
 
 
 class StructureSystem(object):
-    def __init__(self, args, layout=True, table=False, ocr=True):
+    def __init__(self, args, layout=True, table=True, ocr=True):
         self.mode = args.mode
         self.recovery = args.recovery
 
@@ -110,6 +110,7 @@ class StructureSystem(object):
             ori_im = img.copy()
             if self.layout_predictor is not None:
                 layout_res, elapse = self.layout_predictor(img)
+                # layout_res is a list of dictionary. Dic has bbox and label as the keys.
                 time_dict['layout'] += elapse
 
             else:
@@ -122,10 +123,15 @@ class StructureSystem(object):
                     x1, y1, x2, y2 = region['bbox']
                     x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                     roi_img = ori_im[y1:y2, x1:x2, :]
+                    # cv2.namedWindow('img', cv2.WINDOW_NORMAL)
+                    # cv2.imshow('img', roi_img)
+                    # cv2.waitKey(0)
+                    # bbox bata exact crop gareko small image.
 
                 else:
                     x1, y1, x2, y2 = 0, 0, w, h
                     roi_img = ori_im
+
                 if region['label'] == 'table':
                     if self.table_system is not None:
                         res, table_time_dict = self.table_system(
@@ -134,6 +140,7 @@ class StructureSystem(object):
                         time_dict['table_match'] += table_time_dict['match']
                         time_dict['det'] += table_time_dict['det']
                         time_dict['rec'] += table_time_dict['rec']
+                        # print(f"{os.path.abspath(__file__)}: \n {res}")
                 else:
                     if self.text_system is not None:
                         if self.recovery:
@@ -144,6 +151,7 @@ class StructureSystem(object):
                         else:
                             filter_boxes, filter_rec_res, ocr_time_dict = self.text_system(
                                 roi_img)
+                        # filter_boxes = , filter_rec_res is a list of recognized words and confidence
                         time_dict['det'] += ocr_time_dict['det']
                         time_dict['rec'] += ocr_time_dict['rec']
 

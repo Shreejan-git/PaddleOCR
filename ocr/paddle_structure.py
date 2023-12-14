@@ -19,7 +19,7 @@ BASE_DIR = os.path.expanduser("~/.paddleocr/")
 
 
 class PPStructure(StructureSystem):
-    def __init__(self, lang='en', use_gpu=True, layout=True, table=False, **kwargs):
+    def __init__(self, lang='en', use_gpu=True, layout=True, table=True, **kwargs):
         params = parse_args(mMain=False)
         params.__dict__.update(**kwargs)
         assert params.structure_version in SUPPORT_STRUCTURE_MODEL_VERSION, "structure_version must in {}, but get {}".format(
@@ -90,7 +90,7 @@ class PPStructure(StructureSystem):
         super().__init__(params, layout=layout, table=table, ocr=True)
 
     def __call__(self, img, return_ocr_result_in_table=True, img_idx=0):
-        img = check_img(img)
+        img = check_img(img)  # blackNwhite image ho vane BGR ma lagxa navaye same image return hunxa
         res, _ = super().__call__(
             img, return_ocr_result_in_table, img_idx=img_idx)
 

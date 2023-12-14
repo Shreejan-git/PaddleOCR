@@ -138,29 +138,20 @@ def paddle_layout_table_extraction(file_path: str):
                                                         len(img_paths)))
             new_img_name = os.path.basename(new_img_path).split('.')[0]
             results = engine(img, img_idx=index)
+            # print(results)
 
-            # save_structure_res(results, args.output, img_name, index)
+            for i in results:
+                for a in i:
+                    print(f"{a['pred']}: {a['transcription']}")
+                print()
 
-            for layout in results:
-                # print(layout)
-                red = random.randint(0, 256)
-                green = random.randint(0, 256)
-                blue = random.randint(0, 256)
-                l, t, r, b = layout['bbox']  # ltrb format
-                cropped_img = layout['img']
-                cls_type = layout['type']
-                recog_text = layout['res']
 
-                cv2.rectangle(img, (l, t), (r, b), [blue, green, red], 2)
-                cv2.putText(img, cls_type, (l, t), cv2.FONT_HERSHEY_SIMPLEX, 1, [blue, green, red], 2, cv2.LINE_AA)
-
-            cv2.namedWindow('Layout Prediction', cv2.WINDOW_NORMAL)
-            cv2.imshow('Layout Prediction', img)
-            cv2.waitKey(0)
 
 
 if __name__ == "__main__":
     file_path = "/home/vertexaiml/Downloads/ocr_test_image/4 page.jpg"
     file_path = "/home/vertexaiml/Downloads/ocr_test_image/test_invoice.png"
-    file_path = "/home/vertexaiml/Downloads/ocr_test_image/layout_testing_input.png"
+    # file_path = "/home/vertexaiml/Downloads/ocr_test_image/layout_testing_input.png"
+    # file_path = "/home/vertexaiml/Downloads/ocr_test_image/testing.jpg"
+    file_path = "/home/vertexaiml/Downloads/ocr_test_image/sample_Invoice.png"
     paddle_layout_table_extraction(file_path=file_path)

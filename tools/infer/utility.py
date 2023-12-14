@@ -279,6 +279,7 @@ def create_predictor(args, mode, logger):
 
         # create predictor
         predictor = inference.create_predictor(config)
+        # print(predictor)
         input_names = predictor.get_input_names()
         if mode in ['ser', 're']:
             input_tensor = []
