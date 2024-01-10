@@ -67,7 +67,7 @@ def paddle_det_and_rec(input_file: Optional[str] = None, det: bool = True, rec: 
                 # print(all_recognized_text)
                 # else:
                 #     visualize_bboxes(img=img, bboxes=bboxes, rec=rec)
-                print(all_recognized_text)
+                # print(all_recognized_text)
                 return all_recognized_text
 
 
@@ -109,35 +109,37 @@ def llm_component(img_link):
     prompt_template = PromptTemplate(
         input_variables=['recognized_text'],
 
-        template="""
-    You are an expert admin who extracts core information from documents
-
-    {recognized_text}
-
-    Above is the content; please try to extract the following data:
-    1) Extract the details of the bank such as name, contact number, website and address (postbox, city, state, country,
-    zip).
-    2) Details of the client. Such as name, account no, statement start date, statement end date, account type, currency
-    type and address (postbox, city, state, country, zip).
-
-    Return in a JSON array format. Do not auto generate the information. Only return what is there in document or else
-    return an empty string like ""
+        template="""   
+        {recognized_text}
+        from above content try to extract the following data:
+        1) Extract the details of the bank such as name, contact number, website and address (postbox, city, state, country,
+            zip)
+        2) Details of the client. Such as name, account no, statement start date, statement end date, account type, currency
+        type and address (postbox, city, state, country, zip)
+        
+        Format the response as JSON object with the following keys:
+        "bankDetails", "clientDetails"
+        Do not auto generate the information. Only return what is there in document or else
+        return an empty string.
  """
     )
-    llm = OpenAI(openai_api_key="sk-c9N3HG7fDbWoCUzHKpQjT3BBlbkFJhKwpXMhcT2Dr9R8qMGRBB")
+    llm = OpenAI(openai_api_key="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")
     llm_chain = LLMChain(llm=llm, prompt=prompt_template, verbose=True)
 
     # sequential_chain = SimpleSequentialChain(chains=[llm_chain], input_variables=['text'], verbose=True)
 
     response = llm_chain.run(prompt_text)
     print(response)
+    # r = type(response)
+    # print(r)
 
-    returning_file = json.dumps(response[0])
+    # returning_file = json.dumps(response)
+    # print(returning_file)
 
-    return returning_file
+    # return returning_file
 
 
-if __name__ == "__main__":
+def file_list():
     # image_path = "/home/vertexaiml/Downloads/ocr_test_image/nepal.png"
     # image_path = "/home/vertexaiml/Downloads/ocr_test_image/4 page.jpg"
     # image_path = "/home/vertexaiml/Downloads/ocr_test_image/testing.jpg"
@@ -150,7 +152,11 @@ if __name__ == "__main__":
     image_path = "/home/vertexaiml/Downloads/ocr_test_image/tabular_small.jpg"
     # image_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Bank_Of_America/images/5.png"
 
+
+if __name__ == "__main__":
     # paddle_det_and_rec(input_file=image_path, det=True, rec=True)
+    image_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Bank_Of_America/images/1cropped.png"
     paddle_det_and_rec(input_file=image_path, det=True, rec=True)
     # llm_component(image_path)
+    # print(result)
     # print(os.environ.get('OPENAI_API_KEY'))
