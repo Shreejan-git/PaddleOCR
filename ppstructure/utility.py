@@ -1,21 +1,11 @@
-# copyright (c) 2020 PaddlePaddle Authors. All Rights Reserve.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+import os
 import random
 import ast
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 from tools.infer.utility import draw_ocr_box_txt, str2bool, str2int_tuple, init_args as infer_args
+import logging
+current_file_absolute_dir_path = os.path.dirname(__file__)
 
 
 def init_args():
@@ -35,11 +25,18 @@ def init_args():
         default="../ppocr/utils/dict/table_structure_dict_ch.txt")
     # params for layout
     parser.add_argument("--layout_model_dir", type=str)
-    parser.add_argument(
-        "--layout_dict_path",
-        type=str,
-        # default="../ppocr/utils/dict/layout_dict/layout_publaynet_dict.txt")
-        default="/home/vertexaiml/Documents/PaddleOCR/ppocr/utils/dict/layout_dict/layout_publaynet_dict.txt")
+
+    layout_publaynet_dict_path = os.path.join(current_file_absolute_dir_path, '..', 'ppocr', 'utils', 'dict',
+                                              'layout_dict', 'layout_publaynet_dict.txt')
+    if os.path.exists(layout_publaynet_dict_path):
+        parser.add_argument(
+            "--layout_dict_path",
+            type=str,
+            # default="../ppocr/utils/dict/layout_dict/layout_publaynet_dict.txt")
+            default=layout_publaynet_dict_path)
+    else:
+        logging.info(f'INFO [Could not find en_dict_path in {__file__} file]')
+
     parser.add_argument(
         "--layout_score_threshold",
         type=float,
@@ -50,22 +47,24 @@ def init_args():
         type=float,
         default=0.5,
         help="Threshold of nms.")
+
     # params for kie
-    parser.add_argument("--kie_algorithm", type=str, default='LayoutXLM')
-    # parser.add_argument("--ser_model_dir", type=str)
-    parser.add_argument("--ser_model_dir", type=str, default="/home/vertexaiml/Documents/PaddleOCR"
-                                                             "/pretrained_model_kie/ser_vi_layoutxlm_xfund_infer")
-    # parser.add_argument("--re_model_dir", type=str)
-    parser.add_argument("--re_model_dir", type=str, default="/home/vertexaiml/Documents/PaddleOCR"
-                                                            "/pretrained_model_kie/re_vi_layoutxlm_xfund_infer")
-    # parser.add_argument("--use_visual_backbone", type=str2bool, default=True)  # True hunuhudaina error auxa.
-    parser.add_argument("--use_visual_backbone", type=str2bool, default=False)
-    parser.add_argument(
-        "--ser_dict_path",
-        type=str,
-        # default="../train_data/XFUND/class_list_xfun.txt")
-        default="/home/vertexaiml/Desktop/train_data/XFUND/class_list_xfun.txt")
+    # parser.add_argument("--kie_algorithm", type=str, default='LayoutXLM')
+    # # parser.add_argument("--ser_model_dir", type=str)
+    # parser.add_argument("--ser_model_dir", type=str, default="/home/vertexaiml/Documents/PaddleOCR"
+    #                                                          "/pretrained_model_kie/ser_vi_layoutxlm_xfund_infer")
+    # # parser.add_argument("--re_model_dir", type=str)
+    # parser.add_argument("--re_model_dir", type=str, default="/home/vertexaiml/Documents/PaddleOCR"
+    #                                                         "/pretrained_model_kie/re_vi_layoutxlm_xfund_infer")
+    # # parser.add_argument("--use_visual_backbone", type=str2bool, default=True)  # True hunuhudaina error auxa.
+    # parser.add_argument("--use_visual_backbone", type=str2bool, default=False)
+    # parser.add_argument(
+    #     "--ser_dict_path",
+    #     type=str,
+    #     # default="../train_data/XFUND/class_list_xfun.txt")
+    #     default="/home/vertexaiml/Desktop/train_data/XFUND/class_list_xfun.txt")
     # need to be None or tb-yx
+
     parser.add_argument("--ocr_order_method", type=str, default=None)
     # params for inference
     parser.add_argument(
