@@ -15,6 +15,7 @@ logger = get_logger()
 
 def paddle_layout_table_extraction(file_path: str):
     args = parse_args(mMain=True)
+
     if is_link(file_path):
         download_with_progressbar(file_path, 'tmp.jpg')
         file_list = ['tmp.jpg']
@@ -70,34 +71,34 @@ def paddle_layout_table_extraction(file_path: str):
                     cropped_img: np.ndarray = layout['img']  # each detected layout's cropped part
                     cls_type: str = layout['type']
                     recog_info: Dict = layout['res']
-                    if recog_info:
-                        word_bbox: List[List] = recog_info[
-                            'boxes']  # sl = sub-left. bboxes of each detection word with in
-                        # the layout.
-                        rec_res: List[Tuple] = recog_info['rec_res']  # list with recognized words and confidence
-                        for text_conf in rec_res:
-                            recognized_words: str = text_conf[0]  # recognized words
-                            confidence: float = text_conf[1]  # confidence score of each recognized word
-                            all_recognized_text.append(recognized_words)
-                            all_confidence_scores.append(confidence)
-                        if cls_type == "table":
-                            html_tags: str = recog_info['html']  # html tags of the tabular data
-                    image_idx = layout['img_idx']
+                    # if recog_info:
+                    #     word_bbox: List[List] = recog_info[
+                    #         'boxes']  # sl = sub-left. bboxes of each detection word with in
+                    #     # the layout.
+                    #     rec_res: List[Tuple] = recog_info['rec_res']  # list with recognized words and confidence
+                    #     for text_conf in rec_res:
+                    #         recognized_words: str = text_conf[0]  # recognized words
+                    #         confidence: float = text_conf[1]  # confidence score of each recognized word
+                    #         all_recognized_text.append(recognized_words)
+                    #         all_confidence_scores.append(confidence)
+                    #     if cls_type == "table":
+                    #         html_tags: str = recog_info['html']  # html tags of the tabular data
+                    # image_idx = layout['img_idx']
 
-                    # cv2.rectangle(img, (l, t), (r, b), [blue, green, red], 2)
-                    # cv2.putText(img, cls_type, (l, t + 20), cv2.FONT_HERSHEY_SIMPLEX, 1, [blue, green, red], 2,
-                    #             cv2.LINE_AA)
+                    cv2.rectangle(img, (l, t), (r, b), [blue, green, red], 2)
+                    cv2.putText(img, cls_type, (l, t + 20), cv2.FONT_HERSHEY_SIMPLEX, 1, [blue, green, red], 2,
+                                cv2.LINE_AA)
 
-                # cv2.namedWindow('Layout Prediction', cv2.WINDOW_NORMAL)
-                # cv2.imshow('Layout Prediction', img)
-                # cv2.waitKey(0)
+                cv2.namedWindow('Layout Prediction', cv2.WINDOW_NORMAL)
+                cv2.imshow('Layout Prediction', img)
+                cv2.waitKey(0)
 
 
 if __name__ == "__main__":
     # file_path = "/home/vertexaiml/Downloads/ocr_test_image/test_invoice.png" # whole lai figure vanirako xa.
     # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/US_Bank/01.2021-01-29 Statement - USB Y _ Y INC...4004.pdf"
-    file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/Wellsfargo.pdf"  # table detection
+    # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/Wellsfargo.pdf"  # table detection
     # ramro xa
     # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/Wells Fargo -Apr 2022.pdf"
-    # file_path = "/home/vertexaiml/Downloads/ocr_test_image/table_info.png"
+    file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Bank_Of_America/Bank of America.pdf"
     paddle_layout_table_extraction(file_path=file_path)
