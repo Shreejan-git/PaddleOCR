@@ -28,7 +28,8 @@ def check_img(img):
             download_with_progressbar(img, 'tmp.jpg')
             img = 'tmp.jpg'
         image_file = img
-        img, flag_gif, flag_pdf = check_and_read(image_file)
+        page_num, img, flag_gif, flag_pdf = check_and_read(image_file)  # pdf diyeko vaye pages haru lai list of image (ndarray)
+        # banayera auxa.
         if not flag_gif and not flag_pdf:
             with open(image_file, 'rb') as f:
                 img_str = f.read()

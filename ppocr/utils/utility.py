@@ -74,13 +74,15 @@ def get_image_file_list(img_file):
     imgs_lists = sorted(imgs_lists)
     return imgs_lists
 
+
 def binarize_img(img):
     if len(img.shape) == 3 and img.shape[2] == 3:
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) # conversion to grayscale image
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # conversion to grayscale image
         # use cv2 threshold binarization
         _, gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
         img = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
     return img
+
 
 def alpha_to_color(img, alpha_color=(255, 255, 255)):
     if len(img.shape) == 3 and img.shape[2] == 4:
@@ -94,9 +96,10 @@ def alpha_to_color(img, alpha_color=(255, 255, 255)):
         img = cv2.merge((B, G, R))
     return img
 
-def check_and_read(img_path):
-    if os.path.basename(img_path)[-3:].lower() == 'gif':
-        gif = cv2.VideoCapture(img_path)
+
+def check_and_read(file_path):
+    if os.path.basename(file_path)[-3:].lower() == 'gif':
+        gif = cv2.VideoCapture(file_path)
         ret, frame = gif.read()
         if not ret:
             logger = logging.getLogger('ppocr')
@@ -105,12 +108,13 @@ def check_and_read(img_path):
         if len(frame.shape) == 2 or frame.shape[-1] == 1:
             frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
         imgvalue = frame[:, :, ::-1]
-        return imgvalue, True, False
-    elif os.path.basename(img_path)[-3:].lower() == 'pdf':
+        return None, imgvalue, True, False
+    elif os.path.basename(file_path)[-3:].lower() == 'pdf':
         import fitz
         from PIL import Image
         imgs = []
-        with fitz.open(img_path) as pdf:
+        with fitz.open(file_path) as pdf:
+            total_page_num = pdf.page_count
             for pg in range(0, pdf.page_count):
                 page = pdf[pg]
                 mat = fitz.Matrix(2, 2)
@@ -123,8 +127,8 @@ def check_and_read(img_path):
                 img = Image.frombytes("RGB", [pm.width, pm.height], pm.samples)
                 img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
                 imgs.append(img)
-            return imgs, False, True
-    return None, False, False
+            return int(total_page_num), imgs, False, True
+    return 1, None, False, False  # for image.
 
 
 def load_vqa_bio_label_maps(label_map_path):
