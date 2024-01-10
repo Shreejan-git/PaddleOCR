@@ -1,15 +1,9 @@
 import os
-from pathlib import Path
 import logging
-import random
-
-import cv2
-
 from ocr.config import parse_args, SUPPORT_STRUCTURE_MODEL_VERSION, parse_lang, get_model_config
 from ocr.utils import check_img
-from ppocr.utils.network import confirm_model_dir_url, maybe_download, is_link, download_with_progressbar
-from ppocr.utils.utility import check_and_read, get_image_file_list
-from ppstructure.predict_system import StructureSystem, save_structure_res
+from ppocr.utils.network import confirm_model_dir_url, maybe_download
+from ppstructure.predict_system import StructureSystem
 
 from tools.infer.utility import check_gpu
 from ppocr.utils.logging import get_logger
@@ -67,25 +61,45 @@ class PPStructure(StructureSystem):
         maybe_download(params.table_model_dir, table_url)
         maybe_download(params.layout_model_dir, layout_url)
 
+        current_file_absolute_dir_path = os.path.dirname(__file__)
+        base = os.path.join(current_file_absolute_dir_path, '..', 'ppocr', 'utils')
+        # print('value of base:', base)
+
         if params.rec_char_dict_path is None:
-            params.rec_char_dict_path = '/home/vertexaiml/Documents/PaddleOCR/ppocr/utils/en_dict.txt'
+            file_path = os.path.join(base, 'en_dict.txt')
+            if os.path.exists(file_path):
+                params.rec_char_dict_path = file_path
+            else:
+                logger.info(f'INFO [Could not find rec_char_dict_path in {__file__} file]')
 
             # params.rec_char_dict_path = str(
             #     Path(__file__).parent / rec_model_config['dict_path'])
 
         if params.table_char_dict_path is None:
-            params.table_char_dict_path = "/home/vertexaiml/Documents/PaddleOCR/ppocr/utils/dict/table_structure_dict.txt"
-            # params.table_char_dict_path = str(
-            #     Path(__file__).parent / table_model_config['dict_path'])
+            # params.table_char_dict_path = "/home/vertexaiml/Documents/PaddleOCR/ppocr/utils/dict
+            # /table_structure_dict.txt" params.table_char_dict_path = str( Path(__file__).parent /
+            # table_model_config['dict_path'])
+            file_path = os.path.join(base, 'dict', 'table_structure_dict.txt')
+            if os.path.exists(file_path):
+                params.table_char_dict_path = file_path
+            else:
+                logger.info(f'INFO [Could not find table_char_dict_path in {__file__} file]')
 
         if params.layout_dict_path is None:
-            params.layout_dict_path = ("/home/vertexaiml/Documents/PaddleOCR/ppocr/utils/dict/layout_dict"
-                                       "/layout_publaynet_dict.txt")
+
+            file_path = os.path.join(base, 'dict', 'layout_dict', 'layout_publaynet_dict.txt')
+            if os.path.exists(file_path):
+                params.layout_dict_path = file_path
+            else:
+                logger.info(f'INFO [Could not find table_char_dict_path in {__file__} file]')
+
+            # params.layout_dict_path = ("/home/vertexaiml/Documents/PaddleOCR/ppocr/utils/dict/layout_dict"
+            #                            "/layout_publaynet_dict.txt")
 
             # params.layout_dict_path = str(
             #     Path(__file__).parent / layout_model_config['dict_path'])
 
-        logger.debug(params)
+        # logger.debug(params)
         # print(params)
         super().__init__(params, layout=layout, table=table, ocr=True)
 
@@ -95,3 +109,8 @@ class PPStructure(StructureSystem):
             img, return_ocr_result_in_table, img_idx=img_idx)
 
         return res
+
+
+if __name__ == "__main__":
+    print(BASE_DIR)
+    print(os.listdir(BASE_DIR))
