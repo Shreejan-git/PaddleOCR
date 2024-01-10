@@ -1,17 +1,3 @@
-# Copyright (c) 2020 PaddlePaddle Authors. All Rights Reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import argparse
 import os
 import sys
@@ -22,16 +8,21 @@ import paddle
 from PIL import Image, ImageDraw, ImageFont
 import math
 from paddle import inference
-import time
 import random
+import logging
+
 from ppocr.utils.logging import get_logger
+
+current_file_absolute_dir_path = os.path.dirname(__file__)
 
 
 def str2bool(v):
     return v.lower() in ("true", "yes", "t", "y", "1")
 
+
 def str2int_tuple(v):
     return tuple([int(i.strip()) for i in v.split(",")])
+
 
 def init_args():
     parser = argparse.ArgumentParser()
@@ -64,25 +55,25 @@ def init_args():
     parser.add_argument("--det_db_score_mode", type=str, default="fast")
 
     # EAST parmas
-    parser.add_argument("--det_east_score_thresh", type=float, default=0.8)
-    parser.add_argument("--det_east_cover_thresh", type=float, default=0.1)
-    parser.add_argument("--det_east_nms_thresh", type=float, default=0.2)
-
-    # SAST parmas
-    parser.add_argument("--det_sast_score_thresh", type=float, default=0.5)
-    parser.add_argument("--det_sast_nms_thresh", type=float, default=0.2)
-
-    # PSE parmas
-    parser.add_argument("--det_pse_thresh", type=float, default=0)
-    parser.add_argument("--det_pse_box_thresh", type=float, default=0.85)
-    parser.add_argument("--det_pse_min_area", type=float, default=16)
-    parser.add_argument("--det_pse_scale", type=int, default=1)
-
-    # FCE parmas
-    parser.add_argument("--scales", type=list, default=[8, 16, 32])
-    parser.add_argument("--alpha", type=float, default=1.0)
-    parser.add_argument("--beta", type=float, default=1.0)
-    parser.add_argument("--fourier_degree", type=int, default=5)
+    # parser.add_argument("--det_east_score_thresh", type=float, default=0.8)
+    # parser.add_argument("--det_east_cover_thresh", type=float, default=0.1)
+    # parser.add_argument("--det_east_nms_thresh", type=float, default=0.2)
+    #
+    # # SAST parmas
+    # parser.add_argument("--det_sast_score_thresh", type=float, default=0.5)
+    # parser.add_argument("--det_sast_nms_thresh", type=float, default=0.2)
+    #
+    # # PSE parmas
+    # parser.add_argument("--det_pse_thresh", type=float, default=0)
+    # parser.add_argument("--det_pse_box_thresh", type=float, default=0.85)
+    # parser.add_argument("--det_pse_min_area", type=float, default=16)
+    # parser.add_argument("--det_pse_scale", type=int, default=1)
+    #
+    # # FCE parmas
+    # parser.add_argument("--scales", type=list, default=[8, 16, 32])
+    # parser.add_argument("--alpha", type=float, default=1.0)
+    # parser.add_argument("--beta", type=float, default=1.0)
+    # parser.add_argument("--fourier_degree", type=int, default=5)
 
     # params for text recognizer
     parser.add_argument("--rec_algorithm", type=str, default='SVTR_LCNet')
@@ -91,28 +82,35 @@ def init_args():
     parser.add_argument("--rec_image_shape", type=str, default="3, 48, 320")
     parser.add_argument("--rec_batch_num", type=int, default=6)
     parser.add_argument("--max_text_length", type=int, default=25)
-    parser.add_argument(
-        "--rec_char_dict_path",
-        type=str,
-        # default="./ppocr/utils/ppocr_keys_v1.txt")
-        default="/home/vertexaiml/Documents/PaddleOCR/ppocr/utils/en_dict.txt")
+
+    base = os.path.join(current_file_absolute_dir_path, '..', '..', 'ppocr', 'utils')
+    en_dict_path = os.path.join(base, 'en_dict.txt')
+    if os.path.exists(en_dict_path):
+        parser.add_argument(
+            "--rec_char_dict_path",
+            type=str,
+            # default="./ppocr/utils/ppocr_keys_v1.txt")
+            default=en_dict_path)
+    else:
+        logging.info(f'INFO [Could not find en_dict_path in {__file__} file]')
+
     parser.add_argument("--use_space_char", type=str2bool, default=True)
     parser.add_argument(
         "--vis_font_path", type=str, default="./doc/fonts/simfang.ttf")
     parser.add_argument("--drop_score", type=float, default=0.5)
 
     # params for e2e
-    parser.add_argument("--e2e_algorithm", type=str, default='PGNet')
-    parser.add_argument("--e2e_model_dir", type=str)
-    parser.add_argument("--e2e_limit_side_len", type=float, default=768)
-    parser.add_argument("--e2e_limit_type", type=str, default='max')
+    # parser.add_argument("--e2e_algorithm", type=str, default='PGNet')
+    # parser.add_argument("--e2e_model_dir", type=str)
+    # parser.add_argument("--e2e_limit_side_len", type=float, default=768)
+    # parser.add_argument("--e2e_limit_type", type=str, default='max')
 
     # PGNet parmas
-    parser.add_argument("--e2e_pgnet_score_thresh", type=float, default=0.5)
-    parser.add_argument(
-        "--e2e_char_dict_path", type=str, default="./ppocr/utils/ic15_dict.txt")
-    parser.add_argument("--e2e_pgnet_valid_set", type=str, default='totaltext')
-    parser.add_argument("--e2e_pgnet_mode", type=str, default='fast')
+    # parser.add_argument("--e2e_pgnet_score_thresh", type=float, default=0.5)
+    # parser.add_argument(
+    #     "--e2e_char_dict_path", type=str, default="./ppocr/utils/ic15_dict.txt")
+    # parser.add_argument("--e2e_pgnet_valid_set", type=str, default='totaltext')
+    # parser.add_argument("--e2e_pgnet_mode", type=str, default='fast')
 
     # params for text classifier
     parser.add_argument("--use_angle_cls", type=str2bool, default=False)
@@ -128,15 +126,15 @@ def init_args():
     parser.add_argument("--warmup", type=str2bool, default=False)
 
     # SR parmas
-    parser.add_argument("--sr_model_dir", type=str)
-    parser.add_argument("--sr_image_shape", type=str, default="3, 32, 128")
-    parser.add_argument("--sr_batch_num", type=int, default=1)
+    # parser.add_argument("--sr_model_dir", type=str)
+    # parser.add_argument("--sr_image_shape", type=str, default="3, 32, 128")
+    # parser.add_argument("--sr_batch_num", type=int, default=1)
 
     #
-    parser.add_argument(
-        "--draw_img_save_dir", type=str, default="./inference_results")
+    # parser.add_argument(
+    #     "--draw_img_save_dir", type=str, default="./inference_results")
     parser.add_argument("--save_crop_res", type=str2bool, default=False)
-    parser.add_argument("--crop_res_save_dir", type=str, default="./output")
+    # parser.add_argument("--crop_res_save_dir", type=str, default="./output")
 
     # multi-process
     parser.add_argument("--use_mp", type=str2bool, default=False)
@@ -296,7 +294,7 @@ def get_output_tensors(args, mode, predictor):
     output_names = predictor.get_output_names()
     output_tensors = []
     if mode == "rec" and args.rec_algorithm in [
-            "CRNN", "SVTR_LCNet", "SVTR_HGNet"
+        "CRNN", "SVTR_LCNet", "SVTR_HGNet"
     ]:
         output_name = 'softmax_0.tmp_0'
         if output_name in output_names:
@@ -438,9 +436,9 @@ def draw_ocr_box_txt(image,
 
 def draw_box_txt_fine(img_size, box, txt, font_path="./doc/fonts/simfang.ttf"):
     box_height = int(
-        math.sqrt((box[0][0] - box[3][0])**2 + (box[0][1] - box[3][1])**2))
+        math.sqrt((box[0][0] - box[3][0]) ** 2 + (box[0][1] - box[3][1]) ** 2))
     box_width = int(
-        math.sqrt((box[0][0] - box[1][0])**2 + (box[0][1] - box[1][1])**2))
+        math.sqrt((box[0][0] - box[1][0]) ** 2 + (box[0][1] - box[1][1]) ** 2))
 
     if box_height > 2 * box_width and box_height > 30:
         img_text = Image.new('RGB', (box_height, box_width), (255, 255, 255))
