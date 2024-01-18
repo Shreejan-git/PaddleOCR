@@ -50,27 +50,29 @@ def paddle_layout_table_extraction(file_path: str):
                     img_name + '_' + str(index) + '.jpg')
                 cv2.imwrite(pdf_img_path, pdf_img)
                 img_paths.append([pdf_img_path, pdf_img])
-
+        layout_result = []
         for index, (new_img_path, img) in enumerate(img_paths, start=1):  # looping in each page
             logger.info('processing {}/{} page:'.format(index + 1,
                                                         len(img_paths)))
             img_name: str = os.path.basename(new_img_path).split('.')[0]
             page_results: List[Dict] = engine(img, img_idx=index)  # List containing information of a given page in a
             # dictionary. Each dictionary contains information of each detected layout.
+            layout_result.append(page_results)
 
-            all_recognized_text = []  # list containing all recognized texts.
-            all_confidence_scores = []  # list of all confidence scores of all_recognized_text
+        print(layout_result)
+            # all_recognized_text = []  # list containing all recognized texts.
+            # all_confidence_scores = []  # list of all confidence scores of all_recognized_text
 
-            if page_results:
-                for layout in page_results:  # looping on each detected layout
-                    red = random.randint(0, 256)
-                    green = random.randint(0, 256)
-                    blue = random.randint(0, 256)
-
-                    l, t, r, b = layout['bbox']  # ltrb format of layouts detected layout's bounding box
-                    cropped_img: np.ndarray = layout['img']  # each detected layout's cropped part
-                    cls_type: str = layout['type']
-                    recog_info: Dict = layout['res']
+            # if page_results:
+            #     for layout in page_results:  # looping on each detected layout
+            #         red = random.randint(0, 256)
+            #         green = random.randint(0, 256)
+            #         blue = random.randint(0, 256)
+            #
+            #         l, t, r, b = layout['bbox']  # ltrb format of layouts detected layout's bounding box
+            #         cropped_img: np.ndarray = layout['img']  # each detected layout's cropped part
+            #         cls_type: str = layout['type']
+            #         recog_info: Dict = layout['res']
                     # if recog_info:
                     #     word_bbox: List[List] = recog_info[
                     #         'boxes']  # sl = sub-left. bboxes of each detection word with in
@@ -85,13 +87,13 @@ def paddle_layout_table_extraction(file_path: str):
                     #         html_tags: str = recog_info['html']  # html tags of the tabular data
                     # image_idx = layout['img_idx']
 
-                    cv2.rectangle(img, (l, t), (r, b), [blue, green, red], 2)
-                    cv2.putText(img, cls_type, (l, t + 20), cv2.FONT_HERSHEY_SIMPLEX, 1, [blue, green, red], 2,
-                                cv2.LINE_AA)
-
-                cv2.namedWindow('Layout Prediction', cv2.WINDOW_NORMAL)
-                cv2.imshow('Layout Prediction', img)
-                cv2.waitKey(0)
+                #     cv2.rectangle(img, (l, t), (r, b), [blue, green, red], 2)
+                #     cv2.putText(img, cls_type, (l, t + 20), cv2.FONT_HERSHEY_SIMPLEX, 1, [blue, green, red], 2,
+                #                 cv2.LINE_AA)
+                #
+                # cv2.namedWindow('Layout Prediction', cv2.WINDOW_NORMAL)
+                # cv2.imshow('Layout Prediction', img)
+                # cv2.waitKey(0)
 
 
 if __name__ == "__main__":
@@ -100,5 +102,5 @@ if __name__ == "__main__":
     # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/Wellsfargo.pdf"  # table detection
     # ramro xa
     # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/Wells Fargo -Apr 2022.pdf"
-    file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Bank_Of_America/Bank of America.pdf"
+    file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Chase_Bank/chase_bank_pdf/04.April 2022- Bank Statement Chase -0086- Tibet Imports LLC.pdf"
     paddle_layout_table_extraction(file_path=file_path)
