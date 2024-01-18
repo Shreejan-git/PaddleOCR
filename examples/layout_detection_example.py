@@ -102,5 +102,5 @@ if __name__ == "__main__":
     # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/Wellsfargo.pdf"  # table detection
     # ramro xa
     # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/Wells Fargo -Apr 2022.pdf"
-    file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Chase_Bank/chase_bank_pdf/04.April 2022- Bank Statement Chase -0086- Tibet Imports LLC.pdf"
+    file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/US_Bank/01.2021-01-29 Statement - USB Y _ Y INC...4004.pdf"
     paddle_layout_table_extraction(file_path=file_path)
