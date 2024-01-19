@@ -26,11 +26,11 @@ def paddle_layout_table_extraction(file_path: str):
         return
     engine = PPStructure(**args.__dict__)
 
-    for file_path in file_list:  # looping in each file
+    for file_path in file_list:  # looping in each file if multiple pdf files are submitted.
         img_name = os.path.basename(file_path).split('.')[0]  # file name
         logger.info('{}{}{}'.format('*' * 10, file_path, '*' * 10))
 
-        total_page_count, img, flag_gif, flag_pdf = check_and_read(file_path)
+        total_page_count, img, flag_gif, flag_pdf = check_and_read(file_path)  # convert pdf to image
 
         if not flag_gif and not flag_pdf:
             img = cv2.imread(file_path)
@@ -59,41 +59,41 @@ def paddle_layout_table_extraction(file_path: str):
             # dictionary. Each dictionary contains information of each detected layout.
             layout_result.append(page_results)
 
-        print(layout_result)
-            # all_recognized_text = []  # list containing all recognized texts.
-            # all_confidence_scores = []  # list of all confidence scores of all_recognized_text
+        # print(layout_result)
+            all_recognized_text = []  # list containing all recognized texts.
+            all_confidence_scores = []  # list of all confidence scores of all_recognized_text
 
-            # if page_results:
-            #     for layout in page_results:  # looping on each detected layout
-            #         red = random.randint(0, 256)
-            #         green = random.randint(0, 256)
-            #         blue = random.randint(0, 256)
-            #
-            #         l, t, r, b = layout['bbox']  # ltrb format of layouts detected layout's bounding box
-            #         cropped_img: np.ndarray = layout['img']  # each detected layout's cropped part
-            #         cls_type: str = layout['type']
-            #         recog_info: Dict = layout['res']
-                    # if recog_info:
-                    #     word_bbox: List[List] = recog_info[
-                    #         'boxes']  # sl = sub-left. bboxes of each detection word with in
-                    #     # the layout.
-                    #     rec_res: List[Tuple] = recog_info['rec_res']  # list with recognized words and confidence
-                    #     for text_conf in rec_res:
-                    #         recognized_words: str = text_conf[0]  # recognized words
-                    #         confidence: float = text_conf[1]  # confidence score of each recognized word
-                    #         all_recognized_text.append(recognized_words)
-                    #         all_confidence_scores.append(confidence)
-                    #     if cls_type == "table":
-                    #         html_tags: str = recog_info['html']  # html tags of the tabular data
-                    # image_idx = layout['img_idx']
+            if page_results:
+                for layout in page_results:  # looping on each detected layout
+                    red = random.randint(0, 256)
+                    green = random.randint(0, 256)
+                    blue = random.randint(0, 256)
 
-                #     cv2.rectangle(img, (l, t), (r, b), [blue, green, red], 2)
-                #     cv2.putText(img, cls_type, (l, t + 20), cv2.FONT_HERSHEY_SIMPLEX, 1, [blue, green, red], 2,
-                #                 cv2.LINE_AA)
-                #
-                # cv2.namedWindow('Layout Prediction', cv2.WINDOW_NORMAL)
-                # cv2.imshow('Layout Prediction', img)
-                # cv2.waitKey(0)
+                    l, t, r, b = layout['bbox']  # ltrb format of layouts detected layout's bounding box
+                    cropped_img: np.ndarray = layout['img']  # each detected layout's cropped part
+                    cls_type: str = layout['type']
+                    recog_info: Dict = layout['res']
+                    if recog_info:
+                        print(recog_info)
+                        word_bbox: List[List] = recog_info['boxes']  # sl = sub-left.
+                        # bboxes of each detection word with in # the layout.
+                        rec_res: List[Tuple] = recog_info['rec_res']  # list with recognized words and confidence
+                        for text_conf in rec_res:
+                            recognized_words: str = text_conf[0]  # recognized words
+                            confidence: float = text_conf[1]  # confidence score of each recognized word
+                            all_recognized_text.append(recognized_words)
+                            all_confidence_scores.append(confidence)
+                        if cls_type == "table":
+                            html_tags: str = recog_info['html']  # html tags of the tabular data
+                    image_idx = layout['img_idx']
+
+                    cv2.rectangle(img, (l, t), (r, b), [blue, green, red], 2)
+                    cv2.putText(img, cls_type, (l, t + 20), cv2.FONT_HERSHEY_SIMPLEX, 1, [blue, green, red], 2,
+                                cv2.LINE_AA)
+
+                cv2.namedWindow('Layout Prediction', cv2.WINDOW_NORMAL)
+                cv2.imshow('Layout Prediction', img)
+                cv2.waitKey(0)
 
 
 if __name__ == "__main__":
@@ -103,4 +103,5 @@ if __name__ == "__main__":
     # ramro xa
     # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/Wells Fargo -Apr 2022.pdf"
     file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/US_Bank/01.2021-01-29 Statement - USB Y _ Y INC...4004.pdf"
+    # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/wellsfargo_pdf"
     paddle_layout_table_extraction(file_path=file_path)

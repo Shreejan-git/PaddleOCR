@@ -71,7 +71,9 @@ def get_image_file_list(img_file):
                 imgs_lists.append(file_path)
     if len(imgs_lists) == 0:
         raise Exception("not found any img file in {}".format(img_file))
-    imgs_lists = sorted(imgs_lists)
+    # print(imgs_lists)
+    # imgs_lists = sorted(imgs_lists)  # we are not doing sorted because it's not needed for our usecase.
+
     return imgs_lists
 
 
@@ -117,8 +119,9 @@ def check_and_read(file_path):
             total_page_num = pdf.page_count
             for pg in range(0, pdf.page_count):
                 page = pdf[pg]
-                mat = fitz.Matrix(2, 2)
-                pm = page.get_pixmap(matrix=mat, alpha=False)
+                # mat = fitz.Matrix(2, 2)
+                # pm = page.get_pixmap(matrix=mat, alpha=False)
+                pm = page.get_pixmap(matrix=fitz.Matrix(1, 1), alpha=False)
 
                 # if width or height > 2000 pixels, don't enlarge the image
                 if pm.width > 2000 or pm.height > 2000:
@@ -126,6 +129,7 @@ def check_and_read(file_path):
 
                 img = Image.frombytes("RGB", [pm.width, pm.height], pm.samples)
                 img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+                print(img.shape)
                 imgs.append(img)
             return int(total_page_num), imgs, False, True
     return 1, None, False, False  # for image.
