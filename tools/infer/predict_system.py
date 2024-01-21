@@ -92,9 +92,6 @@ class TextSystem(object):
             tmp_box = copy.deepcopy(dt_boxes[bno])
             if self.args.det_box_type == "quad":
                 img_crop = get_rotate_crop_image(ori_im, tmp_box)
-                # cv2.namedWindow('img', cv2.WINDOW_NORMAL)
-                # cv2.imshow('img', img_crop)
-                # cv2.waitKey(0)
             else:
                 img_crop = get_minarea_rect_crop(ori_im, tmp_box)
             img_crop_list.append(img_crop)

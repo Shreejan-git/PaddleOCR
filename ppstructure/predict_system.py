@@ -110,7 +110,9 @@ class StructureSystem(object):
             ori_im = img.copy()
             if self.layout_predictor is not None:
                 layout_res, elapse = self.layout_predictor(img)
-                # layout_res is a list of dictionary. Dic has bbox and label as the keys.
+                # each page ma kk layout detect gareo tesko bbox ra label vanera dictionary ma halkeo xa. layout_res
+                # is a list of dictionary. Dic has bbox and label as the keys. Example: [{'bbox': array([
+                # 27.86228603,   0.        , 549.98056932, 745.63856122]), 'label': 'figure'}]
                 time_dict['layout'] += elapse
 
             else:
@@ -122,10 +124,7 @@ class StructureSystem(object):
                 if region['bbox'] is not None:
                     x1, y1, x2, y2 = region['bbox']
                     x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-                    roi_img = ori_im[y1:y2, x1:x2, :]
-                    # cv2.namedWindow('img', cv2.WINDOW_NORMAL)
-                    # cv2.imshow('img', roi_img)
-                    # cv2.waitKey(0)
+                    roi_img = ori_im[y1:y2, x1:x2, :]  # exactly cropped according to the label.
                     # bbox bata exact crop gareko small image.
 
                 else:
@@ -136,11 +135,11 @@ class StructureSystem(object):
                     if self.table_system is not None:
                         res, table_time_dict = self.table_system(
                             roi_img, return_ocr_result_in_table)
+
                         time_dict['table'] += table_time_dict['table']
                         time_dict['table_match'] += table_time_dict['match']
                         time_dict['det'] += table_time_dict['det']
                         time_dict['rec'] += table_time_dict['rec']
-                        # print(f"{os.path.abspath(__file__)}: \n {res}")
                 else:
                     if self.text_system is not None:
                         if self.recovery:
