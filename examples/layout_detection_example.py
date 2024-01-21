@@ -13,7 +13,7 @@ from ppocr.utils.logging import get_logger
 logger = get_logger()
 
 
-def paddle_layout_table_extraction(file_path: str):
+def paddle_layout_table_extraction(file_path: str, visualize=False):
     args = parse_args(mMain=True)
 
     if is_link(file_path):
@@ -51,15 +51,12 @@ def paddle_layout_table_extraction(file_path: str):
                 cv2.imwrite(pdf_img_path, pdf_img)
                 img_paths.append([pdf_img_path, pdf_img])
         layout_result = []
-        for index, (new_img_path, img) in enumerate(img_paths, start=1):  # looping in each page
+        for index, (new_img_path, img) in enumerate(img_paths, start=0):  # looping in each page
             logger.info('processing {}/{} page:'.format(index + 1,
                                                         len(img_paths)))
             img_name: str = os.path.basename(new_img_path).split('.')[0]
-            page_results: List[Dict] = engine(img, img_idx=index)  # List containing information of a given page in a
-            # dictionary. Each dictionary contains information of each detected layout.
-            layout_result.append(page_results)
+            page_results: List[Dict] = engine(img, img_idx=index)
 
-        # print(layout_result)
             all_recognized_text = []  # list containing all recognized texts.
             all_confidence_scores = []  # list of all confidence scores of all_recognized_text
 
@@ -69,39 +66,46 @@ def paddle_layout_table_extraction(file_path: str):
                     green = random.randint(0, 256)
                     blue = random.randint(0, 256)
 
-                    l, t, r, b = layout['bbox']  # ltrb format of layouts detected layout's bounding box
-                    cropped_img: np.ndarray = layout['img']  # each detected layout's cropped part
-                    cls_type: str = layout['type']
-                    recog_info: Dict = layout['res']
+                    cls_type: str = layout['type']  # layout type
+                    l, t, r, b = layout['bbox']  # ltrb formatted bbox of detected layout
+                    cropped_img: np.ndarray = layout['img']  # detected layout's cropped part
+                    recog_info: Union[list[dict], dict] = layout[
+                        'res']  # list of dicts of detected texts with its confidence
+                    image_index = layout['img_idx']
+
                     if recog_info:
-                        print(recog_info)
-                        word_bbox: List[List] = recog_info['boxes']  # sl = sub-left.
-                        # bboxes of each detection word with in # the layout.
-                        rec_res: List[Tuple] = recog_info['rec_res']  # list with recognized words and confidence
-                        for text_conf in rec_res:
-                            recognized_words: str = text_conf[0]  # recognized words
-                            confidence: float = text_conf[1]  # confidence score of each recognized word
-                            all_recognized_text.append(recognized_words)
-                            all_confidence_scores.append(confidence)
                         if cls_type == "table":
+                            cell_bboxes: list = recog_info['cell_bbox']  # bbox of each cell within the table
+                            bboxes: list = recog_info['boxes']  # bbox of each text detected within the table
+                            rec_res: list[tuple] = recog_info['rec_res']  # tuple of recognized texts with confidence
+                            for text, confidence in rec_res:
+                                recognized_words: str = text
+                                confidence: float = confidence
+                                all_recognized_text.append(recognized_words)
+                                all_confidence_scores.append(confidence)
+
                             html_tags: str = recog_info['html']  # html tags of the tabular data
-                    image_idx = layout['img_idx']
 
-                    cv2.rectangle(img, (l, t), (r, b), [blue, green, red], 2)
-                    cv2.putText(img, cls_type, (l, t + 20), cv2.FONT_HERSHEY_SIMPLEX, 1, [blue, green, red], 2,
-                                cv2.LINE_AA)
+                        else:
+                            for text_conf in recog_info:
+                                recognized_words: str = text_conf['text']  # recognized texts
+                                confidence: float = text_conf['confidence']  # confidence score of each recognized text
+                                text_bbox: list = text_conf['text_region']  # bboxes of each detected text within
+                                # the detected layout.
+                                all_recognized_text.append(recognized_words)
+                                all_confidence_scores.append(confidence)
 
-                cv2.namedWindow('Layout Prediction', cv2.WINDOW_NORMAL)
-                cv2.imshow('Layout Prediction', img)
-                cv2.waitKey(0)
+                        if visualize:
+                            cv2.rectangle(img, (l, t), (r, b), [blue, green, red], 2)
+                            cv2.putText(img, cls_type, (l, t + 20), cv2.FONT_HERSHEY_SIMPLEX, 1, [blue, green, red], 2,
+                                        cv2.LINE_AA)
+                if visualize:
+                    cv2.namedWindow('Layout Prediction', cv2.WINDOW_NORMAL)
+                    cv2.imshow('Layout Prediction', img)
+                    cv2.waitKey(0)
 
 
 if __name__ == "__main__":
-    # file_path = "/home/vertexaiml/Downloads/ocr_test_image/test_invoice.png" # whole lai figure vanirako xa.
-    # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/US_Bank/01.2021-01-29 Statement - USB Y _ Y INC...4004.pdf"
-    # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/Wellsfargo.pdf"  # table detection
-    # ramro xa
-    # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/Wells Fargo -Apr 2022.pdf"
     file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/US_Bank/01.2021-01-29 Statement - USB Y _ Y INC...4004.pdf"
     # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/wellsfargo_pdf"
-    paddle_layout_table_extraction(file_path=file_path)
+    paddle_layout_table_extraction(file_path=file_path, visualize=True)
