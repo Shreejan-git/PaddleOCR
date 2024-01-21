@@ -63,7 +63,6 @@ class PPStructure(StructureSystem):
 
         current_file_absolute_dir_path = os.path.dirname(__file__)
         base = os.path.join(current_file_absolute_dir_path, '..', 'ppocr', 'utils')
-        # print('value of base:', base)
 
         if params.rec_char_dict_path is None:
             file_path = os.path.join(base, 'en_dict.txt')
@@ -100,7 +99,6 @@ class PPStructure(StructureSystem):
             #     Path(__file__).parent / layout_model_config['dict_path'])
 
         # logger.debug(params)
-        # print(params)
         super().__init__(params, layout=layout, table=table, ocr=True)
 
     def __call__(self, img, return_ocr_result_in_table=True, img_idx=0):
@@ -109,8 +107,3 @@ class PPStructure(StructureSystem):
             img, return_ocr_result_in_table, img_idx=img_idx)
 
         return res
-
-
-if __name__ == "__main__":
-    print(BASE_DIR)
-    print(os.listdir(BASE_DIR))
