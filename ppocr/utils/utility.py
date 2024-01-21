@@ -119,9 +119,9 @@ def check_and_read(file_path):
             total_page_num = pdf.page_count
             for pg in range(0, pdf.page_count):
                 page = pdf[pg]
-                # mat = fitz.Matrix(2, 2)
-                # pm = page.get_pixmap(matrix=mat, alpha=False)
-                pm = page.get_pixmap(matrix=fitz.Matrix(1, 1), alpha=False)
+                mat = fitz.Matrix(2, 2)
+                pm = page.get_pixmap(matrix=mat, alpha=False)
+                # pm = page.get_pixmap(matrix=fitz.Matrix(1, 1), alpha=False)
 
                 # if width or height > 2000 pixels, don't enlarge the image
                 if pm.width > 2000 or pm.height > 2000:
