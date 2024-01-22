@@ -54,7 +54,7 @@ def paddle_layout_table_extraction(file_path: str, visualize=False):
         for index, (new_img_path, img) in enumerate(img_paths, start=0):  # looping in each page
             logger.info('processing {}/{} page:'.format(index + 1,
                                                         len(img_paths)))
-            img_name: str = os.path.basename(new_img_path).split('.')[0]
+            # img_name: str = os.path.basename(new_img_path).split('.')[0]
             page_results: List[Dict] = engine(img, img_idx=index)
 
             all_recognized_text = []  # list containing all recognized texts.

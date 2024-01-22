@@ -121,15 +121,13 @@ def check_and_read(file_path):
                 page = pdf[pg]
                 mat = fitz.Matrix(2, 2)
                 pm = page.get_pixmap(matrix=mat, alpha=False)
-                # pm = page.get_pixmap(matrix=fitz.Matrix(1, 1), alpha=False)
 
                 # if width or height > 2000 pixels, don't enlarge the image
                 if pm.width > 2000 or pm.height > 2000:
                     pm = page.get_pixmap(matrix=fitz.Matrix(1, 1), alpha=False)
 
-                img = Image.frombytes("RGB", [pm.width, pm.height], pm.samples)
+                img = Image.frombytes("RGB", (pm.width, pm.height), pm.samples)
                 img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
-                print(img.shape)
                 imgs.append(img)
             return int(total_page_num), imgs, False, True
     return 1, None, False, False  # for image.
