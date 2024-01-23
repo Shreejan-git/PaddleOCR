@@ -25,6 +25,9 @@ import subprocess
 
 from ppocr.utils.logging import get_logger
 
+import fitz
+from PIL import Image
+
 logger = get_logger()
 
 
@@ -104,11 +107,9 @@ def alpha_to_color(img, alpha_color=(255, 255, 255)):
 
 
 def check_and_read(file_path):
+    image_type = ["jpg", "jpeg", 'png']
 
     if os.path.basename(file_path)[-3:].lower() == 'pdf':
-        logger
-        import fitz
-        from PIL import Image
         imgs: list[np.ndarray] = []
         with fitz.open(file_path) as pdf:
             logger.debug("Received a pdf file.")
@@ -117,7 +118,6 @@ def check_and_read(file_path):
                 page = pdf[pg]
                 mat = fitz.Matrix(2, 2)
                 pm = page.get_pixmap(matrix=mat, alpha=False)
-
                 # if width or height > 2000 pixels, don't enlarge the image
                 if pm.width > 2000 or pm.height > 2000:
                     pm = page.get_pixmap(matrix=fitz.Matrix(1, 1), alpha=False)
@@ -125,14 +125,17 @@ def check_and_read(file_path):
                 img = Image.frombytes("RGB", (pm.width, pm.height), pm.samples)
                 img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
                 imgs.append(img)
-            return int(total_page_num), imgs
-    else:
+            return int(total_page_num), imgs, False, True, False
+
+    elif file_path.split('.')[-1].lower() in image_type:
         logger.debug("Received an image.")
         img = cv2.imread(file_path)
         if len(img.shape) == 2 or img.shape[-1] == 1:
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+        return 1, img, True, False, False  # for image.
 
-        return 1, [img]  # for image.
+    else:
+        return 0, None, False, False, True
 
 
 def load_vqa_bio_label_maps(label_map_path):

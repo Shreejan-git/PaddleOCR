@@ -1,13 +1,11 @@
 import os
 from concurrent.futures import ProcessPoolExecutor
-from typing import List, Tuple, Dict, Union
-
-import cv2
-import numpy as np
-
+import tempfile
 from ocr import parse_args, PPStructure
-from ppocr.utils.utility import get_image_file_list, check_and_read
+from ppocr.utils.utility import check_and_read
 from ppocr.utils.logging import get_logger
+from ppocr.utils.network import download_file_from_s3
+from contextlib import contextmanager
 
 logger = get_logger()
 
@@ -17,7 +15,19 @@ class VertexOCR:
     def __init__(self):
         self.args = parse_args(mMain=True)
 
+    @contextmanager
+    def temporary_file(self, uuid, file_name: str, input_file: str):
+        suffix = input_file.split('.')[-1]
+        fd, temp_path = tempfile.mkstemp(suffix=suffix, prefix=str(uuid) + file_name, dir='/tmp')
+        os.close(fd)
+        try:
+            download_file_from_s3(bucket_name='vertex-clients-bucket', s3_file_key='12345', local_file_path=temp_path)
+            yield temp_path
+        finally:
+            os.remove(temp_path)
+
     def process_image(self, img):
+
         try:
             engine = PPStructure(**self.args.__dict__)  # Use appropriate arguments
             return engine(img)
@@ -26,63 +36,78 @@ class VertexOCR:
             return None
 
     def process_files(self, input_file: str, max_workers: int):
+        """
+         If the input_file is a Pdf file each page is converted into images, else passes image to
+         initialized multiprocessor and returns the result.
 
+                 Parameters:
+                         input_file (str): A decimal integer
+                         max_workers (int): Another decimal integer
+
+                 Returns:
+        """
         img_name = os.path.basename(input_file).split('.')[0]
-        uuid = None  # need to discuss
         logger.info(f"Processing file: {input_file} (Image Name: {img_name})")
 
-        total_page_count, imgs = check_and_read(input_file)
+        total_page_count, processed_input, is_image, is_pdf, is_none = check_and_read(input_file)
 
-        if imgs:
+        if is_pdf:
             with ProcessPoolExecutor(max_workers=max_workers) as executor:
                 logger.info("Starting multiprocessing for Layout Extraction")
                 try:
-                    processed = list(executor.map(self.process_image, imgs))
+                    processed = list(executor.map(self.process_image, processed_input))
                     results = [result for result in processed if result is not None]
+
+                    return results
 
                 except Exception as e:
                     logger.error(f"Error during multiprocessing: {e}", exc_info=True)
-        return results
+
+        if is_image:
+            processed = self.process_image(img=processed_input)
+            results = [processed]
+            return results
+
+        if is_none:
+            '''
+            If we get a file other that pdf and supported 3 images types then this section must be triggered.
+            '''
+            print("raise exception")
+            return 0
 
     def extract_layout(self, input_file: str, visualize=False, max_workers=None):
 
         if max_workers is None:
             max_workers = os.cpu_count() or 1
-
-        file_list: List[str] = get_image_file_list(input_file)  # list containing path of each pdf files
-        # yo hatayeko
-
-        # if not file_list:
-        #     logger.error('no images find in {}'.format(input_file))
-        #     return
+        '''
+        file_uuid = input_file['id']
+        file_path = input_file['s3_file_path']
+        file_name = input_file['file_name']
+        
+        with self.temporary_file(uuid=file_uuid, file_name=file_name, input_file=file_path) as temp_file:
+            results = self.process_files(input_file=temp_file, max_workers=max_workers)
+            print(results)
+        '''
 
         results = self.process_files(input_file=input_file, max_workers=max_workers)
-        print(results)
-        # for input_file in file_list:  # looping in each file if multiple pdf files are submitted.
-        #     img_name = os.path.basename(input_file).split('.')[0]  # file name
-        #     logger.info(f"Processing file: {input_file} (Image Name: {img_name})")
-        #
-        #     total_page_count, imgs, flag_gif, flag_pdf = check_and_read(input_file)  # convert pdf to image
-        #     # imgs is a list. It has pages' image form in an original order.
-        #
-        #     if not flag_gif and not flag_pdf:
-        #         imgs = cv2.imread(input_file)
-        #
-        #     if not flag_pdf:
-        #         if imgs is None:
-        #             logger.error("error in loading image:{}".format(input_file))
-        #             continue
-        #         # img_paths: List[List[Union[str, np.ndarray]]] = [[file_path, imgs]]
-        #     else:
-        #         with ProcessPoolExecutor(max_workers=12) as executor:
-        #             logger.info("Starting multiprocessing for Layout Extraction")
-        #             results = list(executor.map(self.process_image, imgs))
-        #             results = [result for result in results if result is not None]
-        #             logger.info("Layout Extraction complete")
-        #             # print(results)
-        #             logger.debug(f"Results:\n {results}")
-
         logger.info(f"Layout extraction completed for: {input_file}")
+
+        # when we get to this point, the layout extraction portion is completed. So, need to update in the
+        # MONGODB calculating the percentage
+        print("******************************************")
+        print(type(results))
+        print(len(results))
+        print(type(results[0]))
+        print(type(results[0][0]))
+        print(results[0][0]['res'])
+        # print(results)
+        # print(results)
+        return results
+
+    def post_process_layout_extraction(self, layout_extraction_result: list):
+        """
+        Takes the output of layout extraction as an input and returns the filtered content from each file
+        """
 
         # IMPORTANT !!!
         # PDF ho vane matrai multiprocessing lagaunu parxa or input nai multiple images ho vane matrai.
@@ -159,7 +184,7 @@ class VertexOCR:
 if __name__ == "__main__":
     import time
 
-    file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/US_Bank/01.2021-01-29 Statement - USB Y _ Y INC...4004.pdf"
+    file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Bank_Of_America/bank_of_america_pdf/Bank of America.pdf"
     # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/wellsfargo_pdf"
     # paddle_layout_table_extraction(file_path=file_path, visualize=True)
     vertex_ocr = VertexOCR()

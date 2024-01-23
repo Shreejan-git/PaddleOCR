@@ -19,6 +19,8 @@ import requests
 from tqdm import tqdm
 
 from ppocr.utils.logging import get_logger
+import boto3
+from botocore.exceptions import NoCredentialsError
 
 MODELS_DIR = os.path.expanduser("~/.paddleocr/models/")
 
@@ -47,7 +49,7 @@ def maybe_download(model_storage_directory, url):
     if not os.path.exists(
             os.path.join(model_storage_directory, 'inference.pdiparams')
     ) or not os.path.exists(
-            os.path.join(model_storage_directory, 'inference.pdmodel')):
+        os.path.join(model_storage_directory, 'inference.pdmodel')):
         assert url.endswith('.tar'), 'Only supports tar compressed package'
         tmp_path = os.path.join(model_storage_directory, url.split('/')[-1])
         print('download {} to {}'.format(url, tmp_path))
@@ -94,3 +96,15 @@ def confirm_model_dir_url(model_dir, default_model_dir, default_url):
         model_dir = default_model_dir
         model_dir = os.path.join(model_dir, file_name)
     return model_dir, url
+
+
+def download_file_from_s3(bucket_name, s3_file_key, local_file_path):
+    # Create an S3 client
+    s3 = boto3.client('s3')
+    try:
+        s3.download_file(bucket_name, s3_file_key, local_file_path)
+        print(f"File downloaded successfully: {local_file_path}")
+    except NoCredentialsError:
+        print("Credentials not available")
+    except Exception as e:
+        print(f"Error downloading file: {e}")
