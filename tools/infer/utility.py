@@ -137,7 +137,7 @@ def init_args():
     # parser.add_argument("--crop_res_save_dir", type=str, default="./output")
 
     # multi-process
-    parser.add_argument("--use_mp", type=str2bool, default=True)
+    parser.add_argument("--use_mp", type=str2bool, default=False)
     parser.add_argument("--total_process_num", type=int, default=10)
     parser.add_argument("--process_id", type=int, default=0)
 

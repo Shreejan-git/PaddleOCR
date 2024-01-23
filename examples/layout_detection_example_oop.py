@@ -3,6 +3,8 @@ from concurrent.futures import ProcessPoolExecutor
 from typing import List, Tuple, Dict, Union
 
 import cv2
+import numpy as np
+
 from ocr import parse_args, PPStructure
 from ppocr.utils.utility import get_image_file_list, check_and_read
 from ppocr.utils.logging import get_logger
@@ -23,24 +25,23 @@ class VertexOCR:
             logger.error(f"Error processing image: {e}", exc_info=True)
             return None
 
-    def process_files(self, file_list, max_workers):
-        results = []
-        for input_file in file_list:
-            img_name = os.path.basename(input_file).split('.')[0]
-            logger.info(f"Processing file: {input_file} (Image Name: {img_name})")
+    def process_files(self, input_file: str, max_workers: int):
 
-            total_page_count, imgs, flag_gif, flag_pdf = check_and_read(input_file)
-            if not flag_gif and not flag_pdf:
-                imgs = [cv2.imread(input_file)]
+        img_name = os.path.basename(input_file).split('.')[0]
+        uuid = None  # need to discuss
+        logger.info(f"Processing file: {input_file} (Image Name: {img_name})")
 
-            if imgs:
-                with ProcessPoolExecutor(max_workers=max_workers) as executor:
-                    logger.info("Starting multiprocessing for Layout Extraction")
-                    try:
-                        processed = list(executor.map(self.process_image, imgs))
-                        results.append(processed)  # research using extend and append
-                    except Exception as e:
-                        logger.error(f"Error during multiprocessing: {e}", exc_info=True)
+        total_page_count, imgs = check_and_read(input_file)
+
+        if imgs:
+            with ProcessPoolExecutor(max_workers=max_workers) as executor:
+                logger.info("Starting multiprocessing for Layout Extraction")
+                try:
+                    processed = list(executor.map(self.process_image, imgs))
+                    results = [result for result in processed if result is not None]
+
+                except Exception as e:
+                    logger.error(f"Error during multiprocessing: {e}", exc_info=True)
         return results
 
     def extract_layout(self, input_file: str, visualize=False, max_workers=None):
@@ -49,13 +50,13 @@ class VertexOCR:
             max_workers = os.cpu_count() or 1
 
         file_list: List[str] = get_image_file_list(input_file)  # list containing path of each pdf files
+        # yo hatayeko
 
-        if not file_list:
-            logger.error('no images find in {}'.format(input_file))
-            return
+        # if not file_list:
+        #     logger.error('no images find in {}'.format(input_file))
+        #     return
 
-        results = self.process_files(file_list, max_workers)
-        results = [result for result in results if result is not None]
+        results = self.process_files(input_file=input_file, max_workers=max_workers)
         print(results)
         # for input_file in file_list:  # looping in each file if multiple pdf files are submitted.
         #     img_name = os.path.basename(input_file).split('.')[0]  # file name

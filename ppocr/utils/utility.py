@@ -23,6 +23,10 @@ import importlib.util
 import sys
 import subprocess
 
+from ppocr.utils.logging import get_logger
+
+logger = get_logger()
+
 
 def print_dict(d, logger, delimiter=0):
     """
@@ -100,22 +104,14 @@ def alpha_to_color(img, alpha_color=(255, 255, 255)):
 
 
 def check_and_read(file_path):
-    if os.path.basename(file_path)[-3:].lower() == 'gif':
-        gif = cv2.VideoCapture(file_path)
-        ret, frame = gif.read()
-        if not ret:
-            logger = logging.getLogger('ppocr')
-            logger.info("Cannot read {}. This gif image maybe corrupted.")
-            return None, False
-        if len(frame.shape) == 2 or frame.shape[-1] == 1:
-            frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
-        imgvalue = frame[:, :, ::-1]
-        return None, imgvalue, True, False
-    elif os.path.basename(file_path)[-3:].lower() == 'pdf':
+
+    if os.path.basename(file_path)[-3:].lower() == 'pdf':
+        logger
         import fitz
         from PIL import Image
-        imgs = []
+        imgs: list[np.ndarray] = []
         with fitz.open(file_path) as pdf:
+            logger.debug("Received a pdf file.")
             total_page_num = pdf.page_count
             for pg in range(0, pdf.page_count):
                 page = pdf[pg]
@@ -129,8 +125,14 @@ def check_and_read(file_path):
                 img = Image.frombytes("RGB", (pm.width, pm.height), pm.samples)
                 img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
                 imgs.append(img)
-            return int(total_page_num), imgs, False, True
-    return 1, None, False, False  # for image.
+            return int(total_page_num), imgs
+    else:
+        logger.debug("Received an image.")
+        img = cv2.imread(file_path)
+        if len(img.shape) == 2 or img.shape[-1] == 1:
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+
+        return 1, [img]  # for image.
 
 
 def load_vqa_bio_label_maps(label_map_path):
