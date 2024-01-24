@@ -1,4 +1,5 @@
 import os
+import pymongo
 from concurrent.futures import ProcessPoolExecutor
 import tempfile
 from ocr import parse_args, PPStructure
@@ -81,7 +82,6 @@ class VertexOCR:
             max_workers = os.cpu_count() or 1
         '''
         file_uuid = input_file['id']
-        
         file_path = input_file['s3_file_path']
         file_name = input_file['file_name']
         
@@ -90,6 +90,14 @@ class VertexOCR:
 
             return results
         '''
+        client = pymongo.MongoClient("mongodb+srv://sangam:12345@cluster0.qtchyof.mongodb.net/")
+        db = client['ocr']
+        collection = db['layout']
+        dictionary = {'_id': 5,
+                      'progress_status': 75,
+                      's3_path': 'link_here'}
+
+        collection.insert_one(dictionary)
 
         results = self.process_files(input_file=input_file, max_workers=max_workers)
         logger.info(f"Layout extraction completed for: {input_file}")
@@ -104,6 +112,8 @@ class VertexOCR:
         print(results[0][0]['res'])
         # print(results)
         # print(results)
+        collection.update_one({"_id": 5}, {"$set": {"progress_status": 100}})
+
         return results
 
     def post_process_layout_extraction(self, layout_extraction_result: list):
@@ -186,7 +196,7 @@ class VertexOCR:
 if __name__ == "__main__":
     import time
 
-    file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Bank_Of_America/bank_of_america_pdf/Bank of America.pdf"
+    file_path = "/home/sangam/Downloads/Vertex_It/Poc_Sample/Bank_Of_America/Bank of America.pdf"
     # file_path = "/home/vertexaiml/Downloads/Vertex_It/Poc_Sample/Wellsfargo/wellsfargo_pdf"
     # paddle_layout_table_extraction(file_path=file_path, visualize=True)
     vertex_ocr = VertexOCR()
