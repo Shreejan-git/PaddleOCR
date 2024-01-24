@@ -81,12 +81,14 @@ class VertexOCR:
             max_workers = os.cpu_count() or 1
         '''
         file_uuid = input_file['id']
+        
         file_path = input_file['s3_file_path']
         file_name = input_file['file_name']
         
         with self.temporary_file(uuid=file_uuid, file_name=file_name, input_file=file_path) as temp_file:
             results = self.process_files(input_file=temp_file, max_workers=max_workers)
-            print(results)
+
+            return results
         '''
 
         results = self.process_files(input_file=input_file, max_workers=max_workers)
